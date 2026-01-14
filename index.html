@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Зарплата 2026</title>
+
+  <!-- --- НАЧАЛО ИЗМЕНЕНИЙ ДЛЯ PWA --- -->
+  <!-- Подключаем манифест (описание приложения) -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Иконка для iOS (если manifest не подгрузится сразу) -->
+  <link rel="apple-touch-icon" href="icon.png">
+  
+  <!-- Цвет строки состояния (вверху экрана) под цвет вашего приложения -->
+  <meta name="theme-color" content="#007aff">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <!-- Разрешает приложению работать в полноэкранном режиме -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <!-- --- КОНЕЦ ИЗМЕНЕНИЙ --- -->
+
+  <style>
+    /* Глобальное исправление: padding теперь входит в ширину */
+    * { box-sizing: border-box; }
+
+    :root {
+      --primary: #007aff;
+      --success: #28a745;
+      --danger: #ff3b30;
+      --warning: #ff9500;
+      --bg: #f5f5f7;
+      --card-bg: #ffffff;
+      --text: #333;
+      --text-sec: #666;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 0;
+      color: var(--text);
+      -webkit-tap-highlight-color: transparent;
+      /* Убираем подсветку при тапе для ощущения нативности */
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px;
+      padding-bottom: 90px; 
+    }
+    h1, h2 { margin: 0; text-align: center; }
+    h1 { font-size: 28px; margin: 24px 0; }
+    h2 { font-size: 22px; margin: 16px 0; }
+
+    /* Кнопки */
+    button { cursor: pointer; border: none; outline: none; font-family: inherit; }
+    .month-btn {
+      display: block;
+      width: 100%;
+      padding: 20px 16px;
+      margin: 8px 0;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      background: var(--card-bg);
+      border-radius: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      color: var(--primary);
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .month-btn:active { transform: scale(0.98); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    
+    .back-btn {
+      background: #e5e5ea;
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    /* Карточки */
+    .item {
+      background: var(--card-bg);
+      padding: 14px;
+      border-radius: 12px;
+      margin: 8px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+    }
+    .dayoff-item { border-left: 4px solid var(--success); }
+    .trip-item { border-left: 4px solid var(--primary); }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+    .item-title { font-weight: 600; font-size: 17px; display: flex; align-items: center; flex-wrap: wrap; }
+    .item-cost { font-weight: 700; font-size: 17px; text-align: right; }
+    .item-sub { font-size: 13px; color: var(--text-sec); margin-top: 4px; }
+
+    /* Бейдж "Выходной" в списке */
+    .weekend-badge {
+      display: inline-flex;
+      align-items: center;
+      background: #fff4e5;
+      color: var(--warning);
+      border: 1px solid var(--warning);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-left: 8px;
+      text-transform: uppercase;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid #f0f0f0;
+    }
+    .action-btn {
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 6px;
+      background: #f0f0f0;
+      color: var(--text);
+      flex: 1;
+    }
+    .action-btn.delete { background: #ffe5e5; color: var(--danger); }
+
+    /* Итого */
+    .total-block {
+      background: var(--card-bg);
+      padding: 16px;
+      border-radius: 12px;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .total-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 15px; }
+    .total-row.final { 
+      margin-top: 12px; 
+      padding-top: 12px; 
+      border-top: 1px solid #eee; 
+      font-weight: 800; 
+      font-size: 18px; 
+      color: var(--primary); 
+    }
+
+    /* Модальное окно */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal.visible { opacity: 1; pointer-events: auto; }
+    
+    .modal-content {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 500px;
+      border-radius: 20px 20px 0 0;
+      padding: 24px;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (min-width: 600px) {
+      .modal { align-items: center; }
+      .modal-content { border-radius: 20px; transform: translateY(20px); opacity: 0; }
+      .modal.visible .modal-content { transform: translateY(0); opacity: 1; }
+    }
+    .modal.visible .modal-content { transform: translateY(0); }
+
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: block; font-size: 13px; color: var(--text-sec); margin-bottom: 6px; font-weight: 500; }
+    .modal-content input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    .modal-content input:focus { border-color: var(--primary); }
+
+    /* Кнопка-переключатель для Выходного */
+    .toggle-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-weight: 600;
+      color: #888;
+      background: white;
+      transition: all 0.2s;
+      cursor: pointer;
+      margin-bottom: 16px;
+      font-size: 15px;
+      flex-wrap: wrap;
+    }
+    .toggle-btn:active { transform: scale(0.98); }
+    .toggle-btn.active {
+      border-color: var(--warning);
+      background: #fff4e5;
+      color: var(--warning);
+    }
+    .toggle-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      margin-right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .toggle-btn.active .toggle-icon {
+      border-color: var(--warning);
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-row { display: flex; gap: 10px; margin-top: 24px; }
+    .btn-row button { flex: 1; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 16px; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-secondary { background: #e5e5ea; color: var(--text); }
+    .btn-danger { background: var(--danger); color: white; }
+    
+    .fab-container {
+      position: fixed; bottom: 20px; left: 0; right: 0; padding: 0 16px;
+      max-width: 600px; margin: 0 auto; box-sizing: border-box; pointer-events: none;
+    }
+    .fab-row { display: flex; gap: 10px; pointer-events: auto; }
+    .fab-btn {
+      flex: 1; padding: 16px; border-radius: 16px; color: white; font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="app"></div>
+  
+  <div id="fab-container" class="fab-container" style="display:none;">
+    <div class="fab-row">
+      <button class="fab-btn" style="background: var(--primary);" onclick="openForm('trip')">➕ Поездка</button>
+      <button class="fab-btn" style="background: var(--success);" onclick="openForm('dayoff')">➕ Выходной</button>
+    </div>
+  </div>
+
+  <div id="modal" class="modal">
+    <div class="modal-content" id="modal-content"></div>
+  </div>
+
+  <script>
+    // --- Конфигурация ---
+    const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+    let data = JSON.parse(localStorage.getItem('salary2026')) || {};
+    let currentMonth = '';
+
+    const formatMoney = (num) => new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
+
+    function save() {
+      localStorage.setItem('salary2026', JSON.stringify(data));
+    }
+
+    function getFirstDay(dayStr) {
+      if (!dayStr) return 999;
+      const num = parseInt(dayStr.replace(/[^0-9].*$/, ''));
+      return isNaN(num) ? 999 : num;
+    }
+
+    function isRange(dayStr) {
+      return dayStr && (dayStr.includes('-') || dayStr.includes('–'));
+    }
+
+    function suggestNights(dayStr) {
+      if (!isRange(dayStr)) return 0;
+      const clean = dayStr.replace('–', '-');
+      const parts = clean.split('-').map(p => p.trim());
+      if (parts.length === 2) {
+        const start = parseInt(parts[0]);
+        const end = parseInt(parts[1]);
+        if (!isNaN(start) && !isNaN(end)) {
+          return end >= start ? end - start : 2;
+        }
+      }
+      return 1;
+    }
+
+    function calcTrip(trip) {
+      const effectiveKM = trip.km ? (trip.km < 250 ? 250 : trip.km) : 0;
+      const coeff = 1 + (trip.isWeekend ? 1 : 0) + effectiveKM / 250 + trip.stores / 10;
+      const baseRate = 3870;
+      return {
+        cost: Math.round(coeff * baseRate),
+        perDiem: trip.nights * 1400
+      };
+    }
+
+    // --- Отрисовка ---
+
+    function renderMonthList() {
+      currentMonth = '';
+      document.getElementById('fab-container').style.display = 'none';
+      
+      let html = `<h1>Зарплата 2026</h1>`;
+      months.forEach(month => {
+        const trips = (data[month] || []).filter(t => t.type === 'trip');
+        let total = 0;
+        trips.forEach(t => {
+           const r = calcTrip(t);
+           total += r.cost + r.perDiem;
+        });
+        const badge = total > 0 ? `<div style="font-size:14px; color:#888; margin-top:4px;">${formatMoney(total)}</div>` : '';
+        html += `
+          <button class="month-btn" onclick="showMonth('${month}')">
+            <div>${month}</div>
+            ${badge}
+          </button>`;
+      });
+      document.getElementById('app').innerHTML = html;
+    }
+
+    function showMonth(month) {
+      currentMonth = month;
+      const items = data[month] || [];
+      const sortedItems = [...items].sort((a, b) => getFirstDay(a.dayRange) - getFirstDay(b.dayRange));
+      
+      let contentHtml = '';
+
+      if (sortedItems.length === 0) {
+        contentHtml = `<div style="text-align:center;color:#999;padding:40px 0;">Нет записей на этот месяц</div>`;
+      } else {
+        sortedItems.forEach(item => {
+          if (item.type === 'dayoff') {
+            contentHtml += `
+              <div class="item dayoff-item">
+                <div class="item-header">
+                  <div class="item-title">${item.dayRange}</div>
+                  <div class="item-cost" style="color:var(--success)">Выходной</div>
+                </div>
+                <div class="item-actions">
+                  <button class="action-btn" onclick="openForm('dayoff', '${item.id}')">✏️ Изменить</button>
+                  <button class="action-btn delete" onclick="confirmDelete('${item.id}')">🗑️ Удалить</button>
+                </div>
+              </div>`;
+          } else {
+            const r = calcTrip(item);
+            const weekendBadge = item.isWeekend ? `<span class="weekend-badge">✔ Выходной</span>` : '';
+            
+            contentHtml += `
+              <div class="item trip-item">
+                <div class="item-header">
+                  <div class="item-title">
+                    ${item.dayRange} — ${item.location}
+                    ${weekendBadge}
+                  </div>
+                  <div class="item-cost">${formatMoney(r.cost)}</div>
+                </div>
+                <div class="item-sub">
+                   КМ: ${item.km || 0} | Точки: ${item.stores} | Суточные: ${formatMoney(r.perDiem)}
+                </div>
+                <div class="item-actions">
+                  <button class="action-btn" onclick="openForm('trip', '${item.id}')">✏️ Изменить</button>
+                  <button class="action-btn delete" onclick="confirmDelete('${item.id}')">🗑️ Удалить</button>
+                </div>
+              </div>`;
+          }
+        });
+      }
+
+      let totalCost = 0, totalPerDiem = 0, totalDayoffs = 0;
+      items.forEach(t => {
+        if (t.type === 'trip') {
+          const r = calcTrip(t);
+          totalCost += r.cost;
+          totalPerDiem += r.perDiem;
+        } else if (t.type === 'dayoff') {
+          totalDayoffs++;
+        }
+      });
+
+      const html = `
+        <button class="back-btn" onclick="renderMonthList()">← Назад</button>
+        <h2>${month}</h2>
+        ${contentHtml}
+        ${items.length > 0 ? `
+        <div class="total-block">
+          <div class="total-row"><span>Работа:</span> <span>${formatMoney(totalCost)}</span></div>
+          <div class="total-row"><span>Суточные:</span> <span>${formatMoney(totalPerDiem)}</span></div>
+          <!-- Строка с количеством выходных дней -->
+          <div class="total-row" style="color: var(--success); font-weight: 600;">
+            <span>Выходные (дни отдыха):</span> <span>${totalDayoffs}</span>
+          </div>
+          <div class="total-row final"><span>Итого:</span> <span>${formatMoney(totalCost + totalPerDiem)}</span></div>
+        </div>` : ''}
+      `;
+      
+      document.getElementById('app').innerHTML = html;
+      document.getElementById('fab-container').style.display = 'block';
+    }
+
+    // --- Модальные окна и Формы ---
+
+    const modal = document.getElementById('modal');
+    const modalContent = document.getElementById('modal-content');
+
+    function closeModal() {
+      modal.classList.remove('visible');
+      setTimeout(() => { modalContent.innerHTML = ''; }, 300);
+    }
+
+    function handleEnterKey(e, callback) {
+      if (e.key === 'Enter') {
+        e.preventDefault(); 
+        callback();
+      }
+    }
+
+    function toggleWeekend() {
+      const btn = document.getElementById('weekendBtn');
+      const icon = document.getElementById('weekendIcon');
+      const isActive = btn.classList.contains('active');
+      
+      if (isActive) {
+        btn.classList.remove('active');
+        icon.innerHTML = '';
+      } else {
+        btn.classList.add('active');
+        icon.innerHTML = '✔';
+      }
+    }
+
+    function openForm(type, itemId = null) {
+      const item = itemId ? (data[currentMonth] || []).find(t => t.id === itemId) : null;
+      const isEdit = !!item;
+      
+      let html = '';
+      
+      if (type === 'trip') {
+        const dayRange = item ? item.dayRange : '';
+        const location = item ? item.location : '';
+        const km = item && item.km !== null ? item.km : '';
+        const stores = item ? item.stores : 0;
+        const isWeekend = item ? item.isWeekend : false;
+        const nights = item ? item.nights : (isEdit ? 0 : suggestNights(dayRange));
+
+        html = `
+          <h3>${isEdit ? 'Редактировать' : 'Добавить'} поездку</h3>
+          <div class="input-group">
+            <label class="input-label">Даты (напр. 5 или 5-7)</label>
+            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="5-7">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Направление / Город</label>
+            <input type="text" id="f_location" value="${location}" placeholder="Москва">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Километры (если < 250, считается как 250)</label>
+            <input type="number" id="f_km" value="${km}" placeholder="0">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Точки (магазины)</label>
+            <input type="number" id="f_stores" value="${stores}" placeholder="0">
+          </div>
+          
+          <div class="toggle-btn ${isWeekend ? 'active' : ''}" id="weekendBtn" onclick="toggleWeekend()">
+            <div class="toggle-icon" id="weekendIcon">${isWeekend ? '✔' : ''}</div>
+            Выходной (x2)
+          </div>
+          <input type="hidden" id="f_isWeekend" value="${isWeekend}">
+
+          <div class="input-group">
+            <label class="input-label">Ночевки (x1400₽)</label>
+            <input type="number" id="f_nights" value="${nights}" placeholder="0">
+          </div>
+          <div class="btn-row">
+            <button class="btn-secondary" onclick="closeModal()">Отмена</button>
+            <button class="btn-primary" id="btnSave">Сохранить</button>
+          </div>
+        `;
+      } else {
+        const dayRange = item ? item.dayRange : '';
+        html = `
+          <h3>${isEdit ? 'Редактировать' : 'Добавить'} выходной</h3>
+          <div class="input-group">
+            <label class="input-label">Дата</label>
+            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="5">
+          </div>
+          <div class="btn-row">
+            <button class="btn-secondary" onclick="closeModal()">Отмена</button>
+            <button class="btn-primary" id="btnSave">Сохранить</button>
+          </div>
+        `;
+      }
+
+      modalContent.innerHTML = html;
+      modal.classList.add('visible');
+      setTimeout(() => document.getElementById('f_dayRange').focus(), 100);
+
+      const saveCallback = () => saveForm(type, itemId);
+      document.getElementById('btnSave').onclick = saveCallback;
+      
+      const inputs = modalContent.querySelectorAll('input:not([type=hidden])');
+      inputs.forEach(input => {
+        input.onkeyup = (e) => handleEnterKey(e, saveCallback);
+      });
+    }
+
+    let deleteId = null;
+    function confirmDelete(id) {
+      deleteId = id;
+      const html = `
+        <h3 style="color:var(--danger)">Удалить запись?</h3>
+        <p style="color:#666; margin-bottom:20px;">Это действие нельзя будет отменить.</p>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="closeModal()">Отмена</button>
+          <button class="btn-danger" onclick="executeDelete()">Удалить</button>
+        </div>
+      `;
+      modalContent.innerHTML = html;
+      modal.classList.add('visible');
+    }
+
+    function executeDelete() {
+      if (deleteId && currentMonth) {
+        data[currentMonth] = (data[currentMonth] || []).filter(t => t.id !== deleteId);
+        save();
+        showMonth(currentMonth);
+      }
+      closeModal();
+    }
+
+    function saveForm(type, itemId) {
+      const dayRange = document.getElementById('f_dayRange').value.trim();
+      if (!dayRange) {
+        alert('Укажите дату');
+        return;
+      }
+
+      let newItem = {
+        id: itemId || Date.now().toString(),
+        type: type,
+        dayRange: dayRange
+      };
+
+      if (type === 'trip') {
+        newItem.location = document.getElementById('f_location').value || '—';
+        const kmVal = document.getElementById('f_km').value;
+        newItem.km = kmVal ? parseInt(kmVal) : null;
+        newItem.stores = parseInt(document.getElementById('f_stores').value) || 0;
+        newItem.isWeekend = document.getElementById('f_isWeekend').value === 'true';
+        newItem.nights = parseInt(document.getElementById('f_nights').value) || 0;
+      } else {
+        newItem.note = 'Выходной';
+      }
+
+      if (!data[currentMonth]) data[currentMonth] = [];
+      
+      if (itemId) {
+        const index = data[currentMonth].findIndex(t => t.id === itemId);
+        if (index !== -1) data[currentMonth][index] = newItem;
+      } else {
+        data[currentMonth].push(newItem);
+      }
+
+      save();
+      closeModal();
+      showMonth(currentMonth);
+    }
+
+    renderMonthList();
+    modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+
+    const originalToggle = toggleWeekend;
+    toggleWeekend = function() {
+      const btn = document.getElementById('weekendBtn');
+      const hiddenInput = document.getElementById('f_isWeekend');
+      originalToggle();
+      hiddenInput.value = btn.classList.contains('active') ? 'true' : 'false';
+    }
+
+  </script>
+</body>
+</html>
