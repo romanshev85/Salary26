@@ -6,17 +6,10 @@
   <title>Зарплата 2026</title>
 
   <!-- --- НАЧАЛО ИЗМЕНЕНИЙ ДЛЯ PWA --- -->
-  <!-- Подключаем манифест (описание приложения) -->
   <link rel="manifest" href="manifest.json">
-  
-  <!-- Иконка для iOS (если manifest не подгрузится сразу) -->
   <link rel="apple-touch-icon" href="icon.png">
-  
-  <!-- Цвет строки состояния (вверху экрана) под цвет вашего приложения -->
   <meta name="theme-color" content="#007aff">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
-  <!-- Разрешает приложению работать в полноэкранном режиме -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <!-- --- КОНЕЦ ИЗМЕНЕНИЙ --- -->
 
@@ -41,7 +34,6 @@
       padding: 0;
       color: var(--text);
       -webkit-tap-highlight-color: transparent;
-      /* Убираем подсветку при тапе для ощущения нативности */
     }
     .container {
       max-width: 600px;
@@ -80,6 +72,27 @@
       font-weight: 500;
       margin-bottom: 10px;
     }
+
+    /* Кнопки Резервного копирования */
+    .backup-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .backup-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      background: #fff;
+      color: var(--text-sec);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .backup-btn:active { background: #f0f0f0; }
 
     /* Карточки */
     .item {
@@ -272,6 +285,9 @@
     <div class="modal-content" id="modal-content"></div>
   </div>
 
+  <!-- Скрытый input для загрузки файла -->
+  <input type="file" id="fileInput" style="display: none;" accept=".json" onchange="handleFileImport(this)">
+
   <script>
     // --- Конфигурация ---
     const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -318,6 +334,58 @@
       };
     }
 
+    // --- Функции Резервного копирования (Backup) ---
+
+    function exportData() {
+      const dataStr = JSON.stringify(data, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const dateStr = new Date().toISOString().slice(0,10);
+      a.download = `salary_backup_${dateStr}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      alert("Файл сохранен! Проверьте папку 'Файлы' (или 'Загрузки') на iPhone.");
+    }
+
+    function triggerImport() {
+      document.getElementById('fileInput').click();
+    }
+
+    function handleFileImport(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          
+          // Простая валидация: проверяем, что это объект и есть ключи месяцев (не обязательно, но хорошо)
+          if (typeof importedData === 'object' && importedData !== null) {
+            // Предупреждение перед перезаписью
+            const confirmMsg = "Это удалит текущие данные и заменит их на файлом. Продолжить?";
+            if (confirm(confirmMsg)) {
+              data = importedData;
+              save();
+              renderMonthList();
+              alert("Данные успешно восстановлены!");
+            }
+          } else {
+            alert("Ошибка: Некорректный формат файла.");
+          }
+        } catch (err) {
+          alert("Ошибка чтения файла: " + err.message);
+        }
+        // Очищаем input, чтобы можно было загрузить тот же файл снова
+        input.value = '';
+      };
+      reader.readAsText(file);
+    }
+
     // --- Отрисовка ---
 
     function renderMonthList() {
@@ -325,6 +393,15 @@
       document.getElementById('fab-container').style.display = 'none';
       
       let html = `<h1>Зарплата 2026</h1>`;
+
+      // Кнопки экспорта/импорта
+      html += `
+        <div class="backup-controls">
+          <button class="backup-btn" onclick="exportData()">💾 Сохранить</button>
+          <button class="backup-btn" onclick="triggerImport()">📂 Восстановить</button>
+        </div>
+      `;
+
       months.forEach(month => {
         const trips = (data[month] || []).filter(t => t.type === 'trip');
         let total = 0;
