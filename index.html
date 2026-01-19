@@ -42,27 +42,38 @@
       padding-bottom: 90px; 
     }
     h1, h2 { margin: 0; text-align: center; }
-    h1 { font-size: 28px; margin: 24px 0; }
+    h1 { font-size: 28px; margin: 24px 0 20px 0; } /* Уменьшил отступ снизу */
     h2 { font-size: 22px; margin: 16px 0; }
-    h3 { margin: 0 0 10px 0; font-size: 18px; } /* Уменьшен заголовок окна */
+    h3 { margin: 0 0 10px 0; font-size: 18px; }
 
     /* Кнопки */
     button { cursor: pointer; border: none; outline: none; font-family: inherit; }
+    
+    /* Сетка для месяцев (3 в ряд) */
+    .months-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* 3 равные колонки */
+      gap: 10px; /* Расстояние между кнопками */
+      margin-bottom: 20px;
+    }
+
     .month-btn {
-      display: block;
-      width: 100%;
-      padding: 20px 16px;
-      margin: 8px 0;
-      font-size: 18px;
-      font-weight: 600;
-      text-align: center;
+      display: flex;
+      flex-direction: column; /* Название и сумма друг под другом */
+      align-items: center;
+      justify-content: center;
       background: var(--card-bg);
       border-radius: 14px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
       color: var(--primary);
       transition: transform 0.1s, box-shadow 0.1s;
+      padding: 15px 5px; /* Компактные отступы */
+      height: 100%; /* Растягиваются на всю высоту ячейки */
+      min-height: 70px; /* Минимальная высота */
     }
-    .month-btn:active { transform: scale(0.98); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    .month-btn:active { transform: scale(0.97); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    .month-name { font-size: 15px; font-weight: 600; text-align: center; margin-bottom: 4px; }
+    .month-badge { font-size: 12px; color: #888; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     
     .back-btn {
       background: #e5e5ea;
@@ -98,9 +109,9 @@
     /* Карточки */
     .item {
       background: var(--card-bg);
-      padding: 14px;
+      padding: 10px;
       border-radius: 12px;
-      margin: 8px 0;
+      margin: 5px 0;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
       display: flex;
       flex-direction: column;
@@ -112,11 +123,11 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
-    .item-title { font-weight: 600; font-size: 17px; display: flex; align-items: center; flex-wrap: wrap; }
-    .item-cost { font-weight: 700; font-size: 17px; text-align: right; }
-    .item-sub { font-size: 13px; color: var(--text-sec); margin-top: 4px; }
+    .item-title { font-weight: 600; font-size: 13px; display: flex; align-items: center; flex-wrap: wrap; }
+    .item-cost { font-weight: 700; font-size: 13px; text-align: right; }
+    .item-sub { font-size: 11px; color: var(--text-sec); margin-top: 3px; }
 
     /* Бейдж "Выходной" в списке */
     .weekend-badge {
@@ -125,24 +136,24 @@
       background: #fff4e5;
       color: var(--warning);
       border: 1px solid var(--warning);
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 9px;
       font-weight: 700;
-      margin-left: 8px;
+      margin-left: 6px;
       text-transform: uppercase;
     }
 
     .item-actions {
       display: flex;
-      gap: 10px;
-      margin-top: 10px;
-      padding-top: 8px;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 6px;
       border-top: 1px solid #f0f0f0;
     }
     .action-btn {
-      padding: 6px 12px;
-      font-size: 13px;
+      padding: 5px 10px;
+      font-size: 11px;
       border-radius: 6px;
       background: #f0f0f0;
       color: var(--text);
@@ -162,7 +173,7 @@
     .total-row.final { 
       margin-top: 12px; 
       padding-top: 12px; 
-      border-top: 1px solid #eee; 
+      border-top:1px solid #eee; 
       font-weight: 800; 
       font-size: 18px; 
       color: var(--primary); 
@@ -187,9 +198,9 @@
     .modal-content {
       background: var(--card-bg);
       width: 100%;
-      max-width: 360px; /* Было 500px */
+      max-width: 360px;
       border-radius: 20px 20px 0 0;
-      padding: 16px; /* Было 24px */
+      padding: 16px;
       transform: translateY(100%);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -200,14 +211,14 @@
     }
     .modal.visible .modal-content { transform: translateY(0); }
 
-    .input-group { margin-bottom: 10px; } /* Было 16px */
-    .input-label { display: block; font-size: 13px; color: var(--text-sec); margin-bottom: 4px; font-weight: 500; } /* Было 6px */
+    .input-group { margin-bottom: 10px; }
+    .input-label { display: block; font-size: 13px; color: var(--text-sec); margin-bottom: 4px; font-weight: 500; }
     .modal-content input {
       width: 100%;
-      padding: 10px; /* Было 14px */
+      padding: 10px;
       border: 1px solid #ddd;
       border-radius: 10px;
-      font-size: 15px; /* Было 16px */
+      font-size: 15px;
     }
     .modal-content input:focus { border-color: var(--primary); }
 
@@ -217,7 +228,7 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      padding: 10px; /* Было 12px */
+      padding: 10px;
       border: 2px solid #ddd;
       border-radius: 12px;
       font-weight: 600;
@@ -225,7 +236,7 @@
       background: white;
       transition: all 0.2s;
       cursor: pointer;
-      margin-bottom: 12px; /* Было 16px */
+      margin-bottom: 12px;
       font-size: 15px;
       flex-wrap: wrap;
     }
@@ -254,8 +265,8 @@
       color: white;
     }
 
-    .btn-row { display: flex; gap: 10px; margin-top: 20px; } /* Было 24px */
-    .btn-row button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 16px; } /* Было 14px */
+    .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-row button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 16px; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: #e5e5ea; color: var(--text); }
     .btn-danger { background: var(--danger); color: white; }
@@ -342,7 +353,7 @@
 
     function calcTrip(trip) {
       const effectiveKM = trip.km ? (trip.km < 250 ? 250 : trip.km) : 0;
-      const coeff = 1 + (trip.isWeekend ? 1 : 0) + effectiveKM / 250 + trip.stores / 10;
+      const coeff = 1 + (trip.isWeekend ?1 : 0) + effectiveKM / 250 + trip.stores / 10;
       const baseRate = 3870;
       return {
         cost: Math.round(coeff * baseRate),
@@ -412,21 +423,27 @@
         </div>
       `;
 
+      // Обертка для сетки (3 в ряд)
+      html += `<div class="months-grid">`;
+
       months.forEach(month => {
         const trips = (data[month] || []).filter(t => t.type === 'trip');
         let total = 0;
         trips.forEach(t => {
            const r = calcTrip(t);
-           // ИСПРАВЛЕНИЕ: Считаем только работу, без суточных
            total += r.cost;
         });
-        const badge = total > 0 ? `<div style="font-size:14px; color:#888; margin-top:4px;">${formatMoney(total)}</div>` : '';
+        const badge = total > 0 ? `<div class="month-badge">${formatMoney(total)}</div>` : '';
+        
         html += `
           <button class="month-btn" onclick="showMonth('${month}')">
-            <div>${month}</div>
+            <div class="month-name">${month}</div>
             ${badge}
           </button>`;
       });
+
+      html += `</div>`; // Закрываем сетку
+      
       document.getElementById('app').innerHTML = html;
     }
 
