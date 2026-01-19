@@ -5,16 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Зарплата 2026</title>
 
-  <!-- --- НАЧАЛО ИЗМЕНЕНИЙ ДЛЯ PWA --- -->
+  <!-- --- PWA META --- -->
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon.png">
   <meta name="theme-color" content="#007aff">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <!-- --- КОНЕЦ ИЗМЕНЕНИЙ --- -->
 
   <style>
-    /* Глобальное исправление: padding теперь входит в ширину */
     * { box-sizing: border-box; }
 
     :root {
@@ -26,13 +24,11 @@
       --card-bg: #ffffff;
       --text: #333;
       --text-sec: #666;
-      /* Цвета для светлой темы */
       --btn-sec-bg: #e5e5ea;
       --btn-sec-text: #333;
       --input-bg: #fff;
     }
 
-    /* Темная тема */
     body.dark-theme {
       --bg: #000000;
       --card-bg: #1c1c1e;
@@ -61,7 +57,7 @@
       padding-bottom: 90px; 
     }
     h1, h2 { margin: 0; text-align: center; }
-    /* Обертка заголовка для кнопки редактирования */
+    
     .header-wrapper {
       display: flex;
       align-items: center;
@@ -73,10 +69,8 @@
     h2 { font-size: 22px; margin: 16px 0; }
     h3 { margin: 0 0 10px 0; font-size: 18px; }
 
-    /* Кнопки */
     button { cursor: pointer; border: none; outline: none; font-family: inherit; }
     
-    /* Кнопка редактирования заголовка */
     .edit-title-btn {
       position: absolute;
       right: 0;
@@ -88,7 +82,6 @@
       padding: 8px;
     }
 
-    /* Сетка для месяцев (3 в ряд) */
     .months-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -110,7 +103,7 @@
       height: 100%;
       min-height: 70px;
     }
-    .month-btn:active { transform: scale(0.97); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    .month-btn:active { transform: scale(0.97); }
     .month-name { font-size: 15px; font-weight: 600; text-align: center; margin-bottom: 4px; }
     .month-badge { font-size: 12px; color: var(--text-sec); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     
@@ -124,7 +117,6 @@
       margin-bottom: 10px;
     }
     
-    /* Верхняя панель месяца (Назад, Ставка) */
     .month-header-controls {
       display: flex;
       justify-content: space-between;
@@ -140,7 +132,6 @@
       font-weight: 600;
     }
 
-    /* Верхняя панель управления (Тема, Бэкап) */
     .top-controls {
       display: flex;
       gap: 8px;
@@ -163,7 +154,6 @@
     .backup-btn:active, .theme-btn:active { background: var(--btn-sec-bg); }
     .theme-btn { flex: 0 0 44px; }
 
-    /* Карточки */
     .item {
       background: var(--card-bg);
       padding: 10px;
@@ -187,7 +177,6 @@
     .item-cost { font-weight: 700; font-size: 13px; text-align: right; }
     .item-sub { font-size: 11px; color: var(--text-sec); margin-top: 3px; }
 
-    /* Бейдж "Выходной" в списке */
     .weekend-badge {
       display: inline-flex;
       align-items: center;
@@ -224,7 +213,6 @@
     .action-btn.delete { background: #ffe5e5; color: var(--danger); }
     body.dark-theme .action-btn.delete { background: #5e1e1e; }
 
-    /* Итого */
     .total-block {
       background: var(--card-bg);
       padding: 16px;
@@ -243,7 +231,6 @@
       color: var(--primary); 
     }
 
-    /* Модальное окно */
     .modal {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -283,18 +270,15 @@
     .modal-content input {
       width: 100%;
       padding: 10px;
-      border:1px solid #ddd;
+      border: 1px solid #ddd;
       border-radius: 10px;
       font-size: 15px;
       background: var(--input-bg);
       color: var(--text);
     }
-    body.dark-theme .modal-content input {
-      border-color: #48484a;
-    }
+    body.dark-theme .modal-content input { border-color: #48484a; }
     .modal-content input:focus { border-color: var(--primary); }
 
-    /* Кнопка-переключатель для Выходного */
     .toggle-btn {
       display: flex;
       align-items: center;
@@ -323,9 +307,7 @@
       background: #fff4e5;
       color: var(--warning);
     }
-    body.dark-theme .toggle-btn.active {
-      background: #3d2f18;
-    }
+    body.dark-theme .toggle-btn.active { background: #3d2f18; }
     .toggle-icon {
       width: 24px;
       height: 24px;
@@ -339,10 +321,7 @@
       transition: all 0.2s;
       flex-shrink: 0;
     }
-    body.dark-theme .toggle-icon {
-      border-color: #48484a;
-      background: #2c2c2e;
-    }
+    body.dark-theme .toggle-icon { border-color: #48484a; background: #2c2c2e; }
     .toggle-btn.active .toggle-icon {
       border-color: var(--warning);
       background: var(--warning);
@@ -381,7 +360,6 @@
     <div class="modal-content" id="modal-content"></div>
   </div>
 
-  <!-- Скрытый input для загрузки файла -->
   <input type="file" id="fileInput" style="display: none;" accept=".json" onchange="handleFileImport(this)">
 
   <script>
@@ -390,9 +368,8 @@
     let data = JSON.parse(localStorage.getItem('salary2026')) || {};
     let currentMonth = '';
     
-    // Загрузка названия приложения
     let appTitle = localStorage.getItem('app_title') || 'Зарплата 2026';
-    document.title = appTitle; // Обновляем вкладку браузера
+    document.title = appTitle;
 
     const DEFAULT_RATE = 3870;
     const formatMoney = (num) => new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
@@ -401,7 +378,7 @@
       localStorage.setItem('salary2026', JSON.stringify(data));
     }
 
-    // --- РЕДАКТИРОВАНИЕ ЗАГОЛОВКА ---
+    // --- Редактирование заголовка ---
     function openTitleModal() {
       const html = `
         <h3>Название приложения</h3>
@@ -429,7 +406,7 @@
       }
     }
 
-    // --- ПОЛУЧЕНИЕ ДАННЫХ МЕСЯЦА С МИГРАЦИЕЙ ---
+    // --- Данные месяца ---
     function getMonthData(monthName) {
       let monthObj = data[monthName];
       
@@ -449,7 +426,7 @@
       return monthObj;
     }
 
-    // --- ИЗМЕНЕНИЕ СТАВКИ ДЛЯ КОНКРЕТНОГО МЕСЯЦА ---
+    // --- Изменение ставки ---
     function openRateModal() {
       const monthData = getMonthData(currentMonth);
       const currentRate = monthData.rate;
@@ -477,11 +454,11 @@
         monthData.rate = parseInt(val);
         save();
         closeModal();
-        showMonth(currentMonth); // Перерисовываем с новой ставкой
+        showMonth(currentMonth);
       }
     }
 
-    // --- ТЕМА ---
+    // --- Тема ---
     function toggleTheme() {
       const body = document.body;
       body.classList.toggle('dark-theme');
@@ -536,10 +513,25 @@
       return 1;
     }
 
-    // ИЗМЕНЕНИЕ: calcTrip принимает ставку как аргумент
+    // --- ИЗМЕНЕННАЯ ЛОГИКА ОПЛАТЫ МАГАЗИНОВ ---
     function calcTrip(trip, rate) {
       const effectiveKM = trip.km ? (trip.km < 250 ? 250 : trip.km) : 0;
-      const coeff =1 + (trip.isWeekend ?1 : 0) + effectiveKM / 250 + trip.stores / 10;
+      
+      // --- РАСЧЕТ БОНУСА ЗА ТОЧКИ ---
+      // Логика:
+      // 1. Если магазинов <= 4 -> бонус 0 (они уже входят в ставку).
+      // 2. Если магазинов > 4 -> считаем нечетные номера (5, 7, 9...) и считаем их по 10% каждый.
+      let storesBonus = 0;
+      if (trip.stores > 4) {
+        // Количество магазинов СВЫШЕ 4
+        const remaining = trip.stores - 4;
+        // Формула (Remaining + 1) / 2 дает 1 для 5, 1 для 7, 2 для 9, 2 для 11 и т.д.
+        // Это соответствует "каждый 5, 7, 9".
+        const paidStoresCount = Math.floor((remaining + 1) / 2);
+        storesBonus = paidStoresCount * 0.1; // 10% за каждый нечетный магазин после 4го.
+      }
+
+      const coeff = 1 + (trip.isWeekend ? 1 : 0) + effectiveKM / 250 + storesBonus;
       return {
         cost: Math.round(coeff * rate),
         perDiem: trip.nights * 1400
@@ -576,7 +568,7 @@
         try {
           const importedData = JSON.parse(e.target.result);
           if (typeof importedData === 'object' && importedData !== null) {
-            const confirmMsg = "Это удалит текущие данные и заменит их на файлом. Продолжить?";
+            const confirmMsg = "Это удалит текущие данные и заменит их файлом. Продолжить?";
             if (confirm(confirmMsg)) {
               data = importedData;
               save();
@@ -603,13 +595,7 @@
       const isDark = document.body.classList.contains('dark-theme');
       const themeIcon = isDark ? '☀️' : '🌙';
       
-      let html = `
-        <div class="header-wrapper">
-          <h1>${appTitle}</h1>
-          <button class="edit-title-btn" onclick="openTitleModal()">✏️</button>
-        </div>
-      `;
-
+      let html = `<h1>${appTitle}</h1>`;
       html += `
         <div class="top-controls">
           <button class="theme-btn" onclick="toggleTheme()" title="Тема">${themeIcon}</button>
@@ -618,12 +604,12 @@
         </div>
       `;
 
+      // Обертка для сетки (3 в ряд)
       html += `<div class="months-grid">`;
 
       months.forEach(month => {
         const monthData = getMonthData(month);
         const trips = monthData.items.filter(t => t.type === 'trip');
-        // ИСПОЛЬЗУЕМ СТАВКУ ЭТОГО МЕСЯЦА
         const rate = monthData.rate;
         
         let total = 0;
@@ -640,7 +626,7 @@
           </button>`;
       });
 
-      html += `</div>`;
+      html += `</div>`; // Закрываем сетку
       
       document.getElementById('app').innerHTML = html;
     }
@@ -674,7 +660,6 @@
                 </div>
               </div>`;
           } else {
-            // ИСПОЛЬЗУЕМ СТАВКУ ЭТОГО МЕСЯЦА
             const r = calcTrip(item, currentRate);
             const weekendBadge = item.isWeekend ? `<span class="weekend-badge">✔ Выходной</span>` : '';
             
