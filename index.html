@@ -324,6 +324,24 @@
       return 1;
     }
 
+    // НОВАЯ ФУНКЦИЯ: Подсчет количества дней в диапазоне
+    function calculateDaysInDayoff(dayStr) {
+      if (!dayStr) return 1;
+      if (!isRange(dayStr)) return 1; // Если просто "9", значит 1 день
+      
+      const clean = dayStr.replace('–', '-');
+      const parts = clean.split('-').map(p => p.trim());
+      if (parts.length === 2) {
+        const start = parseInt(parts[0]);
+        const end = parseInt(parts[1]);
+        if (!isNaN(start) && !isNaN(end)) {
+          // Формула: (Конец - Начало) + 1. Пример: 14 - 9 + 1 = 6 дней
+          return Math.max(0, end - start + 1);
+        }
+      }
+      return 1;
+    }
+
     function calcTrip(trip) {
       const effectiveKM = trip.km ? (trip.km < 250 ? 250 : trip.km) : 0;
       const coeff = 1 + (trip.isWeekend ? 1 : 0) + effectiveKM / 250 + trip.stores / 10;
@@ -348,7 +366,7 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      alert("Файл сохранен! Проверьте папку 'Файлы' (или 'Загрузки') на iPhone.");
+      alert("Файл сохранен! Проверьте папку 'Файлы' (или 'Загрузки') на телефоне.");
     }
 
     function triggerImport() {
@@ -363,10 +381,7 @@
       reader.onload = function(e) {
         try {
           const importedData = JSON.parse(e.target.result);
-          
-          // Простая валидация: проверяем, что это объект и есть ключи месяцев (не обязательно, но хорошо)
           if (typeof importedData === 'object' && importedData !== null) {
-            // Предупреждение перед перезаписью
             const confirmMsg = "Это удалит текущие данные и заменит их на файлом. Продолжить?";
             if (confirm(confirmMsg)) {
               data = importedData;
@@ -380,7 +395,6 @@
         } catch (err) {
           alert("Ошибка чтения файла: " + err.message);
         }
-        // Очищаем input, чтобы можно было загрузить тот же файл снова
         input.value = '';
       };
       reader.readAsText(file);
@@ -393,8 +407,6 @@
       document.getElementById('fab-container').style.display = 'none';
       
       let html = `<h1>Зарплата 2026</h1>`;
-
-      // Кнопки экспорта/импорта
       html += `
         <div class="backup-controls">
           <button class="backup-btn" onclick="exportData()">💾 Сохранить</button>
@@ -431,10 +443,14 @@
       } else {
         sortedItems.forEach(item => {
           if (item.type === 'dayoff') {
+            // Добавляем информацию о количестве дней в карточке
+            const daysCount = calculateDaysInDayoff(item.dayRange);
+            const daysText = daysCount > 1 ? ` (${daysCount} дн.)` : '';
+            
             contentHtml += `
               <div class="item dayoff-item">
                 <div class="item-header">
-                  <div class="item-title">${item.dayRange}</div>
+                  <div class="item-title">${item.dayRange}${daysText}</div>
                   <div class="item-cost" style="color:var(--success)">Выходной</div>
                 </div>
                 <div class="item-actions">
@@ -474,7 +490,8 @@
           totalCost += r.cost;
           totalPerDiem += r.perDiem;
         } else if (t.type === 'dayoff') {
-          totalDayoffs++;
+          // ИСПРАВЛЕНИЕ: Считаем дни, а не записи
+          totalDayoffs += calculateDaysInDayoff(t.dayRange);
         }
       });
 
@@ -486,7 +503,6 @@
         <div class="total-block">
           <div class="total-row"><span>Работа:</span> <span>${formatMoney(totalCost)}</span></div>
           <div class="total-row"><span>Суточные:</span> <span>${formatMoney(totalPerDiem)}</span></div>
-          <!-- Строка с количеством выходных дней -->
           <div class="total-row" style="color: var(--success); font-weight: 600;">
             <span>Выходные (дни отдыха):</span> <span>${totalDayoffs}</span>
           </div>
@@ -547,7 +563,8 @@
           <h3>${isEdit ? 'Редактировать' : 'Добавить'} поездку</h3>
           <div class="input-group">
             <label class="input-label">Даты (напр. 5 или 5-7)</label>
-            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="5-7">
+            <!-- ИСПРАВЛЕНИЕ: inputmode="numeric" вызывает цифровую клавиатуру -->
+            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="5-7" inputmode="numeric">
           </div>
           <div class="input-group">
             <label class="input-label">Направление / Город</label>
@@ -583,7 +600,8 @@
           <h3>${isEdit ? 'Редактировать' : 'Добавить'} выходной</h3>
           <div class="input-group">
             <label class="input-label">Дата</label>
-            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="5">
+            <!-- ИСПРАВЛЕНИЕ: inputmode="numeric" вызывает цифровую клавиатуру -->
+            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="9-14" inputmode="numeric">
           </div>
           <div class="btn-row">
             <button class="btn-secondary" onclick="closeModal()">Отмена</button>
