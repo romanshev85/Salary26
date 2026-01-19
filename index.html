@@ -324,18 +324,15 @@
       return 1;
     }
 
-    // НОВАЯ ФУНКЦИЯ: Подсчет количества дней в диапазоне
     function calculateDaysInDayoff(dayStr) {
       if (!dayStr) return 1;
-      if (!isRange(dayStr)) return 1; // Если просто "9", значит 1 день
-      
+      if (!isRange(dayStr)) return 1; 
       const clean = dayStr.replace('–', '-');
       const parts = clean.split('-').map(p => p.trim());
       if (parts.length === 2) {
         const start = parseInt(parts[0]);
         const end = parseInt(parts[1]);
         if (!isNaN(start) && !isNaN(end)) {
-          // Формула: (Конец - Начало) + 1. Пример: 14 - 9 + 1 = 6 дней
           return Math.max(0, end - start + 1);
         }
       }
@@ -443,7 +440,6 @@
       } else {
         sortedItems.forEach(item => {
           if (item.type === 'dayoff') {
-            // Добавляем информацию о количестве дней в карточке
             const daysCount = calculateDaysInDayoff(item.dayRange);
             const daysText = daysCount > 1 ? ` (${daysCount} дн.)` : '';
             
@@ -490,7 +486,6 @@
           totalCost += r.cost;
           totalPerDiem += r.perDiem;
         } else if (t.type === 'dayoff') {
-          // ИСПРАВЛЕНИЕ: Считаем дни, а не записи
           totalDayoffs += calculateDaysInDayoff(t.dayRange);
         }
       });
@@ -563,8 +558,8 @@
           <h3>${isEdit ? 'Редактировать' : 'Добавить'} поездку</h3>
           <div class="input-group">
             <label class="input-label">Даты (напр. 5 или 5-7)</label>
-            <!-- ИСПРАВЛЕНИЕ: inputmode="numeric" вызывает цифровую клавиатуру -->
-            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="5-7" inputmode="numeric">
+            <!-- ИСПРАВЛЕНИЕ: Убран inputmode, чтобы можно было ввести дефис -->
+            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="5-7">
           </div>
           <div class="input-group">
             <label class="input-label">Направление / Город</label>
@@ -600,8 +595,8 @@
           <h3>${isEdit ? 'Редактировать' : 'Добавить'} выходной</h3>
           <div class="input-group">
             <label class="input-label">Дата</label>
-            <!-- ИСПРАВЛЕНИЕ: inputmode="numeric" вызывает цифровую клавиатуру -->
-            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="9-14" inputmode="numeric">
+            <!-- ИСПРАВЛЕНИЕ: Убран inputmode, чтобы можно было ввести дефис -->
+            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="9-14">
           </div>
           <div class="btn-row">
             <button class="btn-secondary" onclick="closeModal()">Отмена</button>
