@@ -26,7 +26,25 @@
       --card-bg: #ffffff;
       --text: #333;
       --text-sec: #666;
+      /* Цвета для светлой темы */
+      --btn-sec-bg: #e5e5ea;
+      --btn-sec-text: #333;
+      --input-bg: #fff;
     }
+
+    /* Темная тема */
+    body.dark-theme {
+      --bg: #000000;
+      --card-bg: #1c1c1e;
+      --text: #ffffff;
+      --text-sec: #98989d;
+      --primary: #0a84ff;
+      --success: #32d74b;
+      --btn-sec-bg: #3a3a3c;
+      --btn-sec-text: #ffffff;
+      --input-bg: #2c2c2e;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
@@ -34,6 +52,7 @@
       padding: 0;
       color: var(--text);
       -webkit-tap-highlight-color: transparent;
+      transition: background 0.3s, color 0.3s;
     }
     .container {
       max-width: 600px;
@@ -42,7 +61,7 @@
       padding-bottom: 90px; 
     }
     h1, h2 { margin: 0; text-align: center; }
-    h1 { font-size: 28px; margin: 24px 0 20px 0; } /* Уменьшил отступ снизу */
+    h1 { font-size: 28px; margin: 24px 0 20px 0; }
     h2 { font-size: 22px; margin: 16px 0; }
     h3 { margin: 0 0 10px 0; font-size: 18px; }
 
@@ -52,32 +71,32 @@
     /* Сетка для месяцев (3 в ряд) */
     .months-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr); /* 3 равные колонки */
-      gap: 10px; /* Расстояние между кнопками */
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
       margin-bottom: 20px;
     }
 
     .month-btn {
       display: flex;
-      flex-direction: column; /* Название и сумма друг под другом */
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       background: var(--card-bg);
       border-radius: 14px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
       color: var(--primary);
-      transition: transform 0.1s, box-shadow 0.1s;
-      padding: 15px 5px; /* Компактные отступы */
-      height: 100%; /* Растягиваются на всю высоту ячейки */
-      min-height: 70px; /* Минимальная высота */
+      transition: transform 0.1s, box-shadow 0.1s, background 0.3s, color 0.3s;
+      padding: 15px 5px;
+      height: 100%;
+      min-height: 70px;
     }
     .month-btn:active { transform: scale(0.97); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
     .month-name { font-size: 15px; font-weight: 600; text-align: center; margin-bottom: 4px; }
-    .month-badge { font-size: 12px; color: #888; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .month-badge { font-size: 12px; color: var(--text-sec); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     
     .back-btn {
-      background: #e5e5ea;
-      color: var(--text);
+      background: var(--btn-sec-bg);
+      color: var(--btn-sec-text);
       padding: 8px 16px;
       border-radius: 8px;
       font-size: 15px;
@@ -85,26 +104,27 @@
       margin-bottom: 10px;
     }
 
-    /* Кнопки Резервного копирования */
-    .backup-controls {
+    /* Кнопки Резервного копирования и Темы */
+    .top-controls {
       display: flex;
       gap: 10px;
       margin-bottom: 20px;
     }
-    .backup-btn {
+    .backup-btn, .theme-btn {
       flex: 1;
       padding: 12px;
       border-radius: 12px;
       font-size: 14px;
       font-weight: 600;
-      background: #fff;
+      background: var(--card-bg);
       color: var(--text-sec);
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .backup-btn:active { background: #f0f0f0; }
+    .backup-btn:active, .theme-btn:active { background: var(--btn-sec-bg); }
+    .theme-btn { flex: 0 0 44px; /* Ширина кнопки темы */ }
 
     /* Карточки */
     .item {
@@ -115,6 +135,7 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
       display: flex;
       flex-direction: column;
+      transition: background 0.3s;
     }
     .dayoff-item { border-left: 4px solid var(--success); }
     .trip-item { border-left: 4px solid var(--primary); }
@@ -143,23 +164,29 @@
       margin-left: 6px;
       text-transform: uppercase;
     }
+    /* Адаптация бейджа для темной темы */
+    body.dark-theme .weekend-badge {
+      background: #3d2f18;
+      border-color: #6e4e1f;
+    }
 
     .item-actions {
       display: flex;
       gap: 8px;
       margin-top: 8px;
       padding-top: 6px;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid rgba(150,150,150,0.2);
     }
     .action-btn {
       padding: 5px 10px;
       font-size: 11px;
       border-radius: 6px;
-      background: #f0f0f0;
-      color: var(--text);
+      background: var(--btn-sec-bg);
+      color: var(--btn-sec-text);
       flex: 1;
     }
     .action-btn.delete { background: #ffe5e5; color: var(--danger); }
+    body.dark-theme .action-btn.delete { background: #5e1e1e; }
 
     /* Итого */
     .total-block {
@@ -168,12 +195,13 @@
       border-radius: 12px;
       margin-top: 20px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: background 0.3s;
     }
     .total-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 15px; }
     .total-row.final { 
       margin-top: 12px; 
       padding-top: 12px; 
-      border-top:1px solid #eee; 
+      border-top:1px solid rgba(150,150,150,0.2); 
       font-weight: 800; 
       font-size: 18px; 
       color: var(--primary); 
@@ -193,6 +221,8 @@
       pointer-events: none;
       transition: opacity 0.2s;
     }
+    body.dark-theme .modal { background: rgba(0,0,0,0.7); }
+    
     .modal.visible { opacity: 1; pointer-events: auto; }
     
     .modal-content {
@@ -203,6 +233,7 @@
       padding: 16px;
       transform: translateY(100%);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      color: var(--text);
     }
     @media (min-width: 600px) {
       .modal { align-items: center; }
@@ -219,6 +250,11 @@
       border: 1px solid #ddd;
       border-radius: 10px;
       font-size: 15px;
+      background: var(--input-bg);
+      color: var(--text);
+    }
+    body.dark-theme .modal-content input {
+      border-color: #48484a;
     }
     .modal-content input:focus { border-color: var(--primary); }
 
@@ -240,11 +276,19 @@
       font-size: 15px;
       flex-wrap: wrap;
     }
+    body.dark-theme .toggle-btn {
+      background: #2c2c2e;
+      color: #98989d;
+      border-color: #48484a;
+    }
     .toggle-btn:active { transform: scale(0.98); }
     .toggle-btn.active {
       border-color: var(--warning);
       background: #fff4e5;
       color: var(--warning);
+    }
+    body.dark-theme .toggle-btn.active {
+      background: #3d2f18;
     }
     .toggle-icon {
       width: 24px;
@@ -259,6 +303,10 @@
       transition: all 0.2s;
       flex-shrink: 0;
     }
+    body.dark-theme .toggle-icon {
+      border-color: #48484a;
+      background: #2c2c2e;
+    }
     .toggle-btn.active .toggle-icon {
       border-color: var(--warning);
       background: var(--warning);
@@ -268,7 +316,7 @@
     .btn-row { display: flex; gap: 10px; margin-top: 20px; }
     .btn-row button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 16px; }
     .btn-primary { background: var(--primary); color: white; }
-    .btn-secondary { background: #e5e5ea; color: var(--text); }
+    .btn-secondary { background: var(--btn-sec-bg); color: var(--btn-sec-text); }
     .btn-danger { background: var(--danger); color: white; }
     
     .fab-container {
@@ -310,6 +358,22 @@
 
     function save() {
       localStorage.setItem('salary2026', JSON.stringify(data));
+    }
+
+    // --- ТЕМА ---
+    function toggleTheme() {
+      const body = document.body;
+      body.classList.toggle('dark-theme');
+      const isDark = body.classList.contains('dark-theme');
+      localStorage.setItem('dark_theme', isDark);
+      renderMonthList();
+    }
+
+    function applyTheme() {
+      const isDark = localStorage.getItem('dark_theme') === 'true';
+      if (isDark) {
+        document.body.classList.add('dark-theme');
+      }
     }
 
     function getFirstDay(dayStr) {
@@ -415,9 +479,13 @@
       currentMonth = '';
       document.getElementById('fab-container').style.display = 'none';
       
+      const isDark = document.body.classList.contains('dark-theme');
+      const themeIcon = isDark ? '☀️' : '🌙';
+      
       let html = `<h1>Зарплата 2026</h1>`;
       html += `
-        <div class="backup-controls">
+        <div class="top-controls">
+          <button class="theme-btn" onclick="toggleTheme()" title="Тема">${themeIcon}</button>
           <button class="backup-btn" onclick="exportData()">💾 Сохранить</button>
           <button class="backup-btn" onclick="triggerImport()">📂 Восстановить</button>
         </div>
@@ -697,6 +765,8 @@
       showMonth(currentMonth);
     }
 
+    // Инициализация
+    window.addEventListener('load', applyTheme);
     renderMonthList();
     modal.onclick = (e) => { if (e.target === modal) closeModal(); };
 
