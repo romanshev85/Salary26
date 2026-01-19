@@ -44,6 +44,7 @@
     h1, h2 { margin: 0; text-align: center; }
     h1 { font-size: 28px; margin: 24px 0; }
     h2 { font-size: 22px; margin: 16px 0; }
+    h3 { margin: 0 0 10px 0; font-size: 18px; } /* Уменьшен заголовок окна */
 
     /* Кнопки */
     button { cursor: pointer; border: none; outline: none; font-family: inherit; }
@@ -186,9 +187,9 @@
     .modal-content {
       background: var(--card-bg);
       width: 100%;
-      max-width: 500px;
+      max-width: 360px; /* Было 500px */
       border-radius: 20px 20px 0 0;
-      padding: 24px;
+      padding: 16px; /* Было 24px */
       transform: translateY(100%);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -199,14 +200,14 @@
     }
     .modal.visible .modal-content { transform: translateY(0); }
 
-    .input-group { margin-bottom: 16px; }
-    .input-label { display: block; font-size: 13px; color: var(--text-sec); margin-bottom: 6px; font-weight: 500; }
+    .input-group { margin-bottom: 10px; } /* Было 16px */
+    .input-label { display: block; font-size: 13px; color: var(--text-sec); margin-bottom: 4px; font-weight: 500; } /* Было 6px */
     .modal-content input {
       width: 100%;
-      padding: 14px;
+      padding: 10px; /* Было 14px */
       border: 1px solid #ddd;
       border-radius: 10px;
-      font-size: 16px;
+      font-size: 15px; /* Было 16px */
     }
     .modal-content input:focus { border-color: var(--primary); }
 
@@ -216,7 +217,7 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      padding: 12px;
+      padding: 10px; /* Было 12px */
       border: 2px solid #ddd;
       border-radius: 12px;
       font-weight: 600;
@@ -224,7 +225,7 @@
       background: white;
       transition: all 0.2s;
       cursor: pointer;
-      margin-bottom: 16px;
+      margin-bottom: 12px; /* Было 16px */
       font-size: 15px;
       flex-wrap: wrap;
     }
@@ -253,8 +254,8 @@
       color: white;
     }
 
-    .btn-row { display: flex; gap: 10px; margin-top: 24px; }
-    .btn-row button { flex: 1; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 16px; }
+    .btn-row { display: flex; gap: 10px; margin-top: 20px; } /* Было 24px */
+    .btn-row button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 16px; } /* Было 14px */
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: #e5e5ea; color: var(--text); }
     .btn-danger { background: var(--danger); color: white; }
@@ -416,7 +417,8 @@
         let total = 0;
         trips.forEach(t => {
            const r = calcTrip(t);
-           total += r.cost + r.perDiem;
+           // ИСПРАВЛЕНИЕ: Считаем только работу, без суточных
+           total += r.cost;
         });
         const badge = total > 0 ? `<div style="font-size:14px; color:#888; margin-top:4px;">${formatMoney(total)}</div>` : '';
         html += `
@@ -501,7 +503,7 @@
           <div class="total-row" style="color: var(--success); font-weight: 600;">
             <span>Выходные (дни отдыха):</span> <span>${totalDayoffs}</span>
           </div>
-          <div class="total-row final"><span>Итого:</span> <span>${formatMoney(totalCost + totalPerDiem)}</span></div>
+          <div class="total-row final"><span>Итого:</span> <span>${formatMoney(totalCost)}</span></div>
         </div>` : ''}
       `;
       
@@ -558,7 +560,6 @@
           <h3>${isEdit ? 'Редактировать' : 'Добавить'} поездку</h3>
           <div class="input-group">
             <label class="input-label">Даты (напр. 5 или 5-7)</label>
-            <!-- ИСПРАВЛЕНИЕ: Убран inputmode, чтобы можно было ввести дефис -->
             <input type="text" id="f_dayRange" value="${dayRange}" placeholder="5-7">
           </div>
           <div class="input-group">
@@ -595,7 +596,6 @@
           <h3>${isEdit ? 'Редактировать' : 'Добавить'} выходной</h3>
           <div class="input-group">
             <label class="input-label">Дата</label>
-            <!-- ИСПРАВЛЕНИЕ: Убран inputmode, чтобы можно было ввести дефис -->
             <input type="text" id="f_dayRange" value="${dayRange}" placeholder="9-14">
           </div>
           <div class="btn-row">
