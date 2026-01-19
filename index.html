@@ -61,13 +61,33 @@
       padding-bottom: 90px; 
     }
     h1, h2 { margin: 0; text-align: center; }
-    h1 { font-size: 28px; margin: 24px 0 20px 0; }
+    /* Обертка заголовка для кнопки редактирования */
+    .header-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 24px 0 20px 0;
+      position: relative;
+    }
+    h1 { font-size: 28px; margin: 0; }
     h2 { font-size: 22px; margin: 16px 0; }
     h3 { margin: 0 0 10px 0; font-size: 18px; }
 
     /* Кнопки */
     button { cursor: pointer; border: none; outline: none; font-family: inherit; }
     
+    /* Кнопка редактирования заголовка */
+    .edit-title-btn {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: var(--text-sec);
+      background: none;
+      padding: 8px;
+    }
+
     /* Сетка для месяцев (3 в ряд) */
     .months-grid {
       display: grid;
@@ -369,12 +389,44 @@
     const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
     let data = JSON.parse(localStorage.getItem('salary2026')) || {};
     let currentMonth = '';
+    
+    // Загрузка названия приложения
+    let appTitle = localStorage.getItem('app_title') || 'Зарплата 2026';
+    document.title = appTitle; // Обновляем вкладку браузера
 
     const DEFAULT_RATE = 3870;
     const formatMoney = (num) => new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
 
     function save() {
       localStorage.setItem('salary2026', JSON.stringify(data));
+    }
+
+    // --- РЕДАКТИРОВАНИЕ ЗАГОЛОВКА ---
+    function openTitleModal() {
+      const html = `
+        <h3>Название приложения</h3>
+        <div class="input-group">
+          <input type="text" id="title_input" value="${appTitle}">
+        </div>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="closeModal()">Отмена</button>
+          <button class="btn-primary" onclick="saveAppTitle()">Сохранить</button>
+        </div>
+      `;
+      modalContent.innerHTML = html;
+      modal.classList.add('visible');
+      setTimeout(() => document.getElementById('title_input').focus(), 100);
+    }
+
+    function saveAppTitle() {
+      const val = document.getElementById('title_input').value.trim();
+      if (val) {
+        appTitle = val;
+        localStorage.setItem('app_title', val);
+        document.title = val; // Обновляем вкладку браузера
+        closeModal();
+        renderMonthList();
+      }
     }
 
     // --- ПОЛУЧЕНИЕ ДАННЫХ МЕСЯЦА С МИГРАЦИЕЙ ---
@@ -551,7 +603,13 @@
       const isDark = document.body.classList.contains('dark-theme');
       const themeIcon = isDark ? '☀️' : '🌙';
       
-      let html = `<h1>Зарплата 2026</h1>`;
+      let html = `
+        <div class="header-wrapper">
+          <h1>${appTitle}</h1>
+          <button class="edit-title-btn" onclick="openTitleModal()">✏️</button>
+        </div>
+      `;
+
       html += `
         <div class="top-controls">
           <button class="theme-btn" onclick="toggleTheme()" title="Тема">${themeIcon}</button>
