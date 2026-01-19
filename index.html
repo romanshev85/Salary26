@@ -103,13 +103,30 @@
       font-weight: 500;
       margin-bottom: 10px;
     }
+    
+    /* Верхняя панель месяца (Назад, Ставка) */
+    .month-header-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .current-rate-btn {
+      font-size: 13px;
+      color: var(--warning);
+      background: rgba(255, 149, 0, 0.1);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
 
-    /* Кнопки Резервного копирования и Темы */
+    /* Верхняя панель управления (Тема, Бэкап) */
     .top-controls {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       margin-bottom: 20px;
     }
+    
     .backup-btn, .theme-btn {
       flex: 1;
       padding: 12px;
@@ -124,7 +141,7 @@
       justify-content: center;
     }
     .backup-btn:active, .theme-btn:active { background: var(--btn-sec-bg); }
-    .theme-btn { flex: 0 0 44px; /* Ширина кнопки темы */ }
+    .theme-btn { flex: 0 0 44px; }
 
     /* Карточки */
     .item {
@@ -156,7 +173,7 @@
       align-items: center;
       background: #fff4e5;
       color: var(--warning);
-      border: 1px solid var(--warning);
+      border:1px solid var(--warning);
       padding: 1px 6px;
       border-radius: 10px;
       font-size: 9px;
@@ -164,7 +181,6 @@
       margin-left: 6px;
       text-transform: uppercase;
     }
-    /* Адаптация бейджа для темной темы */
     body.dark-theme .weekend-badge {
       background: #3d2f18;
       border-color: #6e4e1f;
@@ -247,7 +263,7 @@
     .modal-content input {
       width: 100%;
       padding: 10px;
-      border: 1px solid #ddd;
+      border:1px solid #ddd;
       border-radius: 10px;
       font-size: 15px;
       background: var(--input-bg);
@@ -354,10 +370,63 @@
     let data = JSON.parse(localStorage.getItem('salary2026')) || {};
     let currentMonth = '';
 
+    const DEFAULT_RATE = 3870;
     const formatMoney = (num) => new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
 
     function save() {
       localStorage.setItem('salary2026', JSON.stringify(data));
+    }
+
+    // --- ПОЛУЧЕНИЕ ДАННЫХ МЕСЯЦА С МИГРАЦИЕЙ ---
+    function getMonthData(monthName) {
+      let monthObj = data[monthName];
+      
+      // Если данных нет вообще
+      if (!monthObj) {
+        monthObj = { rate: DEFAULT_RATE, items: [] };
+        data[monthName] = monthObj;
+      }
+      // Если это старый формат (просто массив записей), мигрируем
+      else if (Array.isArray(monthObj)) {
+        const oldItems = monthObj;
+        monthObj = { rate: DEFAULT_RATE, items: oldItems };
+        data[monthName] = monthObj;
+        save(); // Сохраняем мигрированные данные
+      }
+      
+      return monthObj;
+    }
+
+    // --- ИЗМЕНЕНИЕ СТАВКИ ДЛЯ КОНКРЕТНОГО МЕСЯЦА ---
+    function openRateModal() {
+      const monthData = getMonthData(currentMonth);
+      const currentRate = monthData.rate;
+
+      const html = `
+        <h3>Ставка: ${currentMonth}</h3>
+        <div class="input-group">
+          <label class="input-label">Текущая ставка (руб)</label>
+          <input type="number" id="rate_input" value="${currentRate}">
+        </div>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="closeModal()">Отмена</button>
+          <button class="btn-primary" onclick="saveMonthRate()">Сохранить</button>
+        </div>
+      `;
+      modalContent.innerHTML = html;
+      modal.classList.add('visible');
+      setTimeout(() => document.getElementById('rate_input').focus(), 100);
+    }
+
+    function saveMonthRate() {
+      const val = document.getElementById('rate_input').value;
+      if (val && !isNaN(val)) {
+        const monthData = getMonthData(currentMonth);
+        monthData.rate = parseInt(val);
+        save();
+        closeModal();
+        showMonth(currentMonth); // Перерисовываем с новой ставкой
+      }
     }
 
     // --- ТЕМА ---
@@ -415,12 +484,12 @@
       return 1;
     }
 
-    function calcTrip(trip) {
+    // ИЗМЕНЕНИЕ: calcTrip принимает ставку как аргумент
+    function calcTrip(trip, rate) {
       const effectiveKM = trip.km ? (trip.km < 250 ? 250 : trip.km) : 0;
-      const coeff = 1 + (trip.isWeekend ?1 : 0) + effectiveKM / 250 + trip.stores / 10;
-      const baseRate = 3870;
+      const coeff =1 + (trip.isWeekend ?1 : 0) + effectiveKM / 250 + trip.stores / 10;
       return {
-        cost: Math.round(coeff * baseRate),
+        cost: Math.round(coeff * rate),
         perDiem: trip.nights * 1400
       };
     }
@@ -486,19 +555,22 @@
       html += `
         <div class="top-controls">
           <button class="theme-btn" onclick="toggleTheme()" title="Тема">${themeIcon}</button>
-          <button class="backup-btn" onclick="exportData()">💾 Сохранить</button>
-          <button class="backup-btn" onclick="triggerImport()">📂 Восстановить</button>
+          <button class="backup-btn" onclick="exportData()">💾</button>
+          <button class="backup-btn" onclick="triggerImport()">📂</button>
         </div>
       `;
 
-      // Обертка для сетки (3 в ряд)
       html += `<div class="months-grid">`;
 
       months.forEach(month => {
-        const trips = (data[month] || []).filter(t => t.type === 'trip');
+        const monthData = getMonthData(month);
+        const trips = monthData.items.filter(t => t.type === 'trip');
+        // ИСПОЛЬЗУЕМ СТАВКУ ЭТОГО МЕСЯЦА
+        const rate = monthData.rate;
+        
         let total = 0;
         trips.forEach(t => {
-           const r = calcTrip(t);
+           const r = calcTrip(t, rate);
            total += r.cost;
         });
         const badge = total > 0 ? `<div class="month-badge">${formatMoney(total)}</div>` : '';
@@ -510,14 +582,16 @@
           </button>`;
       });
 
-      html += `</div>`; // Закрываем сетку
+      html += `</div>`;
       
       document.getElementById('app').innerHTML = html;
     }
 
     function showMonth(month) {
       currentMonth = month;
-      const items = data[month] || [];
+      const monthData = getMonthData(month);
+      const items = monthData.items;
+      const currentRate = monthData.rate;
       const sortedItems = [...items].sort((a, b) => getFirstDay(a.dayRange) - getFirstDay(b.dayRange));
       
       let contentHtml = '';
@@ -542,7 +616,8 @@
                 </div>
               </div>`;
           } else {
-            const r = calcTrip(item);
+            // ИСПОЛЬЗУЕМ СТАВКУ ЭТОГО МЕСЯЦА
+            const r = calcTrip(item, currentRate);
             const weekendBadge = item.isWeekend ? `<span class="weekend-badge">✔ Выходной</span>` : '';
             
             contentHtml += `
@@ -569,7 +644,7 @@
       let totalCost = 0, totalPerDiem = 0, totalDayoffs = 0;
       items.forEach(t => {
         if (t.type === 'trip') {
-          const r = calcTrip(t);
+          const r = calcTrip(t, currentRate);
           totalCost += r.cost;
           totalPerDiem += r.perDiem;
         } else if (t.type === 'dayoff') {
@@ -578,7 +653,10 @@
       });
 
       const html = `
-        <button class="back-btn" onclick="renderMonthList()">← Назад</button>
+        <div class="month-header-controls">
+          <button class="back-btn" onclick="renderMonthList()">← Назад</button>
+          <button class="current-rate-btn" onclick="openRateModal()">⚙️ Ставка: ${currentRate}</button>
+        </div>
         <h2>${month}</h2>
         ${contentHtml}
         ${items.length > 0 ? `
@@ -628,7 +706,8 @@
     }
 
     function openForm(type, itemId = null) {
-      const item = itemId ? (data[currentMonth] || []).find(t => t.id === itemId) : null;
+      const monthData = getMonthData(currentMonth);
+      const item = itemId ? monthData.items.find(t => t.id === itemId) : null;
       const isEdit = !!item;
       
       let html = '';
@@ -720,7 +799,8 @@
 
     function executeDelete() {
       if (deleteId && currentMonth) {
-        data[currentMonth] = (data[currentMonth] || []).filter(t => t.id !== deleteId);
+        const monthData = getMonthData(currentMonth);
+        monthData.items = monthData.items.filter(t => t.id !== deleteId);
         save();
         showMonth(currentMonth);
       }
@@ -751,13 +831,13 @@
         newItem.note = 'Выходной';
       }
 
-      if (!data[currentMonth]) data[currentMonth] = [];
+      const monthData = getMonthData(currentMonth);
       
       if (itemId) {
-        const index = data[currentMonth].findIndex(t => t.id === itemId);
-        if (index !== -1) data[currentMonth][index] = newItem;
+        const index = monthData.items.findIndex(t => t.id === itemId);
+        if (index !== -1) monthData.items[index] = newItem;
       } else {
-        data[currentMonth].push(newItem);
+        monthData.items.push(newItem);
       }
 
       save();
