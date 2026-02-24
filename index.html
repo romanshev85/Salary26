@@ -59,11 +59,26 @@
       overscroll-behavior-y: contain;
     }
 
-    .container { max-width: 600px; margin: 0 auto; padding: 16px 12px; }
+    .container { 
+      max-width: 600px; 
+      margin: 0 auto; 
+      padding: 16px 12px; 
+      /* ИСПРАВЛЕНИЕ ДЛЯ IPHONE 16 PRO MAX: отступ сверху учитывает островок камеры */
+      padding-top: max(20px, env(safe-area-inset-top));
+    }
 
     /* Заголовки */
     h1, h2, h3 { margin: 0; text-align: center; letter-spacing: -0.5px; }
-    h1 { font-size: 26px; font-weight: 800; margin: 16px 0 20px; color: var(--text); }
+    h1 { 
+      font-size: 26px; font-weight: 800; margin: 10px 0 20px; color: var(--text); 
+      cursor: text; /* Показывает, что можно редактировать */
+      padding: 5px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    h1:active { background: rgba(0,0,0,0.05); }
+    h1:focus { outline: 2px solid var(--primary); background: rgba(0,0,0,0.05); }
+
     h2 { font-size: 20px; font-weight: 700; margin: 16px 0; }
     h3 { font-size: 14px; font-weight: 600; margin: 12px 0 8px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -148,7 +163,13 @@
       border: 1px solid rgba(0,0,0,0.02);
     }
     .month-btn:active { transform: scale(0.96); }
-    .month-name { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+    
+    /* ИЗМЕНЕНИЕ: Синий цвет названия месяца */
+    .month-name { 
+      font-size: 16px; font-weight: 700; margin-bottom: 2px; 
+      color: var(--primary); 
+    }
+    
     .month-badge { font-size: 13px; color: var(--text-sec); font-weight: 500; }
 
     .month-header-controls {
@@ -300,7 +321,6 @@
       box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
     }
 
-    /* ИСПРАВЛЕНИЕ: Это правило заставляет окно появляться на мобильных */
     .modal.visible .modal-content {
       transform: translateY(0);
     }
@@ -362,7 +382,9 @@
   <input type="file" id="fileInput" style="display: none;" accept=".json" onchange="handleFileImport(this)" />
 
   <script>
-    const appTitle = "Зарплата 2026";
+    // Получаем название из хранилища или ставим дефолт
+    let appTitle = localStorage.getItem('app_title') || "Зарплата 2026";
+    
     const PER_DIEM_RATE = 1400;
     const MIN_KM = 250;
     const months = [
@@ -374,6 +396,24 @@
     let currentMonth = '';
 
     const formatMoney = (num) => new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
+    
+    // Сохранение названия
+    function updateTitle(el) {
+      const newTitle = el.innerText.trim();
+      if (newTitle) {
+        appTitle = newTitle;
+        localStorage.setItem('app_title', newTitle);
+        document.title = newTitle;
+      }
+    }
+    
+    // Предотвращаем перенос строки в заголовке при Enter
+    function handleTitleEnter(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        e.target.blur(); // Снимаем фокус
+      }
+    }
     
     function save() {
       localStorage.setItem('salary2026', JSON.stringify(data));
@@ -465,7 +505,8 @@
       const isDark = document.body.classList.contains('dark-theme');
       const themeIcon = isDark ? '☀️' : '🌙';
 
-      let html = `<h1>${appTitle}</h1>`;
+      // Добавил contenteditable и oninput для редактирования названия
+      let html = `<h1 contenteditable="true" oninput="updateTitle(this)" onkeydown="handleTitleEnter(event)">${appTitle}</h1>`;
       
       html += `
         <div class="top-controls">
