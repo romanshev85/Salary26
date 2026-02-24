@@ -2,19 +2,16 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Зарплата 2026</title>
 
-  <!-- --- PWA META --- -->
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon.png">
-  <meta name="theme-color" content="#007aff">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.json" onerror="this.remove()"> <!-- Игнорируем ошибку если нет файла -->
+  <meta name="theme-color" content="#007aff" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
 
   <style>
-    * { box-sizing: border-box; }
-
     :root {
       --primary: #007aff;
       --success: #28a745;
@@ -24,99 +21,91 @@
       --card-bg: #ffffff;
       --text: #333;
       --text-sec: #666;
-      --btn-sec-bg: #e5e5ea;
-      --btn-sec-text: #333;
-      --input-bg: #fff;
+      --border-color: #e5e5ea;
+      --input-bg: #ffffff;
+      --shadow: 0 2px 8px rgba(0,0,0,0.05);
+      --border-radius: 12px;
     }
 
+    /* Темная тема */
     body.dark-theme {
       --bg: #000000;
       --card-bg: #1c1c1e;
       --text: #ffffff;
       --text-sec: #98989d;
-      --primary: #0a84ff;
-      --success: #32d74b;
-      --btn-sec-bg: #3a3a3c;
-      --btn-sec-text: #ffffff;
+      --border-color: #38383a;
       --input-bg: #2c2c2e;
+      --shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
 
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
       margin: 0;
       padding: 0;
       color: var(--text);
-      -webkit-tap-highlight-color: transparent;
       transition: background 0.3s, color 0.3s;
+      padding-bottom: 100px;
     }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 16px;
-      padding-bottom: 90px; 
-    }
-    h1, h2 { margin: 0; text-align: center; }
+
+    .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+
+    h1, h2, h3 { margin: 0; text-align: center; }
+    h1 { font-size: 28px; margin: 24px 0; }
+    h2 { font-size: 22px; margin: 16px 0; }
+    h3 { font-size: 18px; margin: 10px 0; color: var(--text-sec); }
+
+    button { cursor: pointer; border: none; outline: none; font-family: inherit; -webkit-appearance: none; }
     
-    .header-wrapper {
+    /* Кнопки управления сверху */
+    .top-controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .theme-btn, .backup-btn {
+      background: var(--card-bg);
+      color: var(--primary);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 20px;
+      box-shadow: var(--shadow);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 24px 0 20px 0;
-      position: relative;
+      transition: transform 0.1s;
     }
-    h1 { font-size: 28px; margin: 0; }
-    h2 { font-size: 22px; margin: 16px 0; }
-    h3 { margin: 0 0 10px 0; font-size: 18px; }
+    .theme-btn:active, .backup-btn:active { transform: scale(0.9); }
 
-    button { cursor: pointer; border: none; outline: none; font-family: inherit; }
-    
-    .edit-title-btn {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 18px;
-      color: var(--text-sec);
-      background: none;
-      padding: 8px;
-    }
-
+    /* Сетка месяцев */
     .months-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
+    @media (max-width: 380px) { .months-grid { grid-template-columns: 1fr; } }
 
     .month-btn {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 20px 10px;
       background: var(--card-bg);
       border-radius: 14px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-      color: var(--primary);
-      transition: transform 0.1s, box-shadow 0.1s, background 0.3s, color 0.3s;
-      padding: 15px 5px;
-      height: 100%;
-      min-height: 70px;
+      box-shadow: var(--shadow);
+      color: var(--text);
+      transition: transform 0.1s, box-shadow 0.1s;
     }
     .month-btn:active { transform: scale(0.97); }
-    .month-name { font-size: 15px; font-weight: 600; text-align: center; margin-bottom: 4px; }
-    .month-badge { font-size: 12px; color: var(--text-sec); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-    
-    .back-btn {
-      background: var(--btn-sec-bg);
-      color: var(--btn-sec-text);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 500;
-      margin-bottom: 10px;
-    }
-    
+    .month-name { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+    .month-badge { font-size: 13px; color: var(--text-sec); }
+
+    /* Хедер внутри месяца */
     .month-header-controls {
       display: flex;
       justify-content: space-between;
@@ -124,45 +113,23 @@
       margin-bottom: 10px;
     }
     .current-rate-btn {
+      background: rgba(0, 122, 255, 0.1);
+      color: var(--primary);
+      padding: 6px 12px;
+      border-radius: 20px;
       font-size: 13px;
-      color: var(--warning);
-      background: rgba(255, 149, 0, 0.1);
-      padding: 6px 10px;
-      border-radius: 8px;
       font-weight: 600;
     }
 
-    .top-controls {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-    
-    .backup-btn, .theme-btn {
-      flex: 1;
-      padding: 12px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 600;
-      background: var(--card-bg);
-      color: var(--text-sec);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .backup-btn:active, .theme-btn:active { background: var(--btn-sec-bg); }
-    .theme-btn { flex: 0 0 44px; }
-
+    /* Карточки */
     .item {
       background: var(--card-bg);
-      padding: 10px;
-      border-radius: 12px;
-      margin: 5px 0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      padding: 14px;
+      border-radius: var(--border-radius);
+      margin: 8px 0;
+      box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      transition: background 0.3s;
     }
     .dayoff-item { border-left: 4px solid var(--success); }
     .trip-item { border-left: 4px solid var(--primary); }
@@ -171,185 +138,144 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
-    .item-title { font-weight: 600; font-size: 13px; display: flex; align-items: center; flex-wrap: wrap; }
-    .item-cost { font-weight: 700; font-size: 13px; text-align: right; }
-    .item-sub { font-size: 11px; color: var(--text-sec); margin-top: 3px; }
+    .item-title { font-weight: 600; font-size: 17px; display: flex; align-items: center; flex-wrap: wrap; }
+    .item-cost { font-weight: 700; font-size: 17px; text-align: right; }
+    .item-sub { font-size: 13px; color: var(--text-sec); margin-top: 4px; }
 
     .weekend-badge {
       display: inline-flex;
       align-items: center;
-      background: #fff4e5;
+      background: rgba(255, 149, 0, 0.15);
       color: var(--warning);
-      border:1px solid var(--warning);
-      padding: 1px 6px;
-      border-radius: 10px;
-      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
       font-weight: 700;
-      margin-left: 6px;
+      margin-left: 8px;
       text-transform: uppercase;
-    }
-    body.dark-theme .weekend-badge {
-      background: #3d2f18;
-      border-color: #6e4e1f;
     }
 
     .item-actions {
       display: flex;
-      gap: 8px;
-      margin-top: 8px;
-      padding-top: 6px;
-      border-top: 1px solid rgba(150,150,150,0.2);
+      gap: 10px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-color);
     }
     .action-btn {
-      padding: 5px 10px;
-      font-size: 11px;
+      padding: 6px 12px;
+      font-size: 13px;
       border-radius: 6px;
-      background: var(--btn-sec-bg);
-      color: var(--btn-sec-text);
+      background: var(--border-color);
+      color: var(--text);
       flex: 1;
     }
-    .action-btn.delete { background: #ffe5e5; color: var(--danger); }
-    body.dark-theme .action-btn.delete { background: #5e1e1e; }
+    .action-btn.delete { background: rgba(255, 59, 48, 0.1); color: var(--danger); }
 
+    /* Блок Итого и Выплаты */
     .total-block {
       background: var(--card-bg);
       padding: 16px;
-      border-radius: 12px;
+      border-radius: var(--border-radius);
       margin-top: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      transition: background 0.3s;
+      box-shadow: var(--shadow);
     }
     .total-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 15px; }
     .total-row.final { 
-      margin-top: 12px; 
-      padding-top: 12px; 
-      border-top:1px solid rgba(150,150,150,0.2); 
-      font-weight: 800; 
-      font-size: 18px; 
-      color: var(--primary); 
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color); 
+      font-weight: 800; font-size: 18px; color: var(--primary); 
     }
 
+    /* Инпуты внутри страницы */
+    .input-group { margin-bottom: 12px; }
+    .input-label { display: block; font-size: 12px; color: var(--text-sec); margin-bottom: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;}
+    input:not([type="hidden"]) {
+      width: 100%;
+      padding: 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 16px;
+      color: var(--text);
+      -webkit-appearance: none;
+    }
+    input:focus { border-color: var(--primary); outline: none; }
+
+    /* FAB */
+    .fab-container {
+      position: fixed; bottom: 20px; left: 0; right: 0; padding: 0 16px;
+      max-width: 600px; margin: 0 auto; pointer-events: none; z-index: 100;
+    }
+    .fab-row { display: flex; gap: 10px; pointer-events: auto; }
+    .fab-btn {
+      flex: 1; padding: 16px; border-radius: 16px; color: white; font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+
+    /* Modal */
     .modal {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.4);
       backdrop-filter: blur(4px);
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
+      display: flex; align-items: flex-end; justify-content: center;
       z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
+      opacity: 0; pointer-events: none;
       transition: opacity 0.2s;
     }
-    body.dark-theme .modal { background: rgba(0,0,0,0.7); }
-    
     .modal.visible { opacity: 1; pointer-events: auto; }
-    
     .modal-content {
       background: var(--card-bg);
       width: 100%;
-      max-width: 360px;
+      max-width: 500px;
       border-radius: 20px 20px 0 0;
-      padding: 16px;
+      padding: 24px;
       transform: translateY(100%);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      color: var(--text);
     }
     @media (min-width: 600px) {
       .modal { align-items: center; }
       .modal-content { border-radius: 20px; transform: translateY(20px); opacity: 0; }
       .modal.visible .modal-content { transform: translateY(0); opacity: 1; }
     }
-    .modal.visible .modal-content { transform: translateY(0); }
 
-    .input-group { margin-bottom: 10px; }
-    .input-label { display: block; font-size: 13px; color: var(--text-sec); margin-bottom: 4px; font-weight: 500; }
-    .modal-content input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 15px;
-      background: var(--input-bg);
-      color: var(--text);
-    }
-    body.dark-theme .modal-content input { border-color: #48484a; }
-    .modal-content input:focus { border-color: var(--primary); }
-
+    /* Toggle Button */
     .toggle-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      padding: 10px;
-      border: 2px solid #ddd;
-      border-radius: 12px;
-      font-weight: 600;
-      color: #888;
-      background: white;
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; padding: 12px;
+      border: 2px solid var(--border-color); border-radius: 12px;
+      font-weight: 600; color: var(--text-sec);
+      background: var(--input-bg);
       transition: all 0.2s;
-      cursor: pointer;
-      margin-bottom: 12px;
-      font-size: 15px;
-      flex-wrap: wrap;
-    }
-    body.dark-theme .toggle-btn {
-      background: #2c2c2e;
-      color: #98989d;
-      border-color: #48484a;
+      cursor: pointer; margin-bottom: 16px; font-size: 15px;
     }
     .toggle-btn:active { transform: scale(0.98); }
-    .toggle-btn.active {
-      border-color: var(--warning);
-      background: #fff4e5;
-      color: var(--warning);
-    }
-    body.dark-theme .toggle-btn.active { background: #3d2f18; }
+    .toggle-btn.active { border-color: var(--warning); background: rgba(255, 149, 0, 0.1); color: var(--warning); }
     .toggle-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 2px solid #ccc;
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2px solid var(--text-sec);
       margin-right: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: white;
-      transition: all 0.2s;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--card-bg);
+      transition: all 0.2s; flex-shrink: 0;
     }
-    body.dark-theme .toggle-icon { border-color: #48484a; background: #2c2c2e; }
-    .toggle-btn.active .toggle-icon {
-      border-color: var(--warning);
-      background: var(--warning);
-      color: white;
-    }
+    .toggle-btn.active .toggle-icon { border-color: var(--warning); background: var(--warning); color: white; border: none; }
 
-    .btn-row { display: flex; gap: 10px; margin-top: 20px; }
-    .btn-row button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 16px; }
+    .btn-row { display: flex; gap: 10px; margin-top: 24px; }
+    .btn-row button { flex: 1; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 16px; }
     .btn-primary { background: var(--primary); color: white; }
-    .btn-secondary { background: var(--btn-sec-bg); color: var(--btn-sec-text); }
+    .btn-secondary { background: var(--border-color); color: var(--text); }
     .btn-danger { background: var(--danger); color: white; }
-    
-    .fab-container {
-      position: fixed; bottom: 20px; left: 0; right: 0; padding: 0 16px;
-      max-width: 600px; margin: 0 auto; box-sizing: border-box; pointer-events: none;
-    }
-    .fab-row { display: flex; gap: 10px; pointer-events: auto; }
-    .fab-btn {
-      flex: 1; padding: 16px; border-radius: 16px; color: white; font-weight: 600;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
   <div class="container" id="app"></div>
   
-  <div id="fab-container" class="fab-container" style="display:none;">
+  <div id="fab-container" class="fab-container hidden">
     <div class="fab-row">
       <button class="fab-btn" style="background: var(--primary);" onclick="openForm('trip')">➕ Поездка</button>
       <button class="fab-btn" style="background: var(--success);" onclick="openForm('dayoff')">➕ Выходной</button>
@@ -360,119 +286,57 @@
     <div class="modal-content" id="modal-content"></div>
   </div>
 
-  <input type="file" id="fileInput" style="display: none;" accept=".json" onchange="handleFileImport(this)">
+  <!-- Скрытый инпут для импорта -->
+  <input type="file" id="fileInput" style="display: none;" accept=".json" onchange="handleFileImport(this)" />
 
   <script>
     // --- Конфигурация ---
-    const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+    const appTitle = "Зарплата 2026";
+    const PER_DIEM_RATE = 1400;
+    const MIN_KM = 250;
+    const months = [
+      'Январь','Февраль','Март','Апрель','Май','Июнь',
+      'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'
+    ];
+
+    // --- Состояние ---
     let data = JSON.parse(localStorage.getItem('salary2026')) || {};
     let currentMonth = '';
-    
-    let appTitle = localStorage.getItem('app_title') || 'Зарплата 2026';
-    document.title = appTitle;
 
-    const DEFAULT_RATE = 3870;
+    // --- Утилиты ---
     const formatMoney = (num) => new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
-
+    
     function save() {
       localStorage.setItem('salary2026', JSON.stringify(data));
     }
 
-    // --- Редактирование заголовка ---
-    function openTitleModal() {
-      const html = `
-        <h3>Название приложения</h3>
-        <div class="input-group">
-          <input type="text" id="title_input" value="${appTitle}">
-        </div>
-        <div class="btn-row">
-          <button class="btn-secondary" onclick="closeModal()">Отмена</button>
-          <button class="btn-primary" onclick="saveAppTitle()">Сохранить</button>
-        </div>
-      `;
-      modalContent.innerHTML = html;
-      modal.classList.add('visible');
-      setTimeout(() => document.getElementById('title_input').focus(), 100);
-    }
-
-    function saveAppTitle() {
-      const val = document.getElementById('title_input').value.trim();
-      if (val) {
-        appTitle = val;
-        localStorage.setItem('app_title', val);
-        document.title = val; // Обновляем вкладку браузера
-        closeModal();
-        renderMonthList();
+    function checkStorage() {
+      try {
+        localStorage.setItem('test', 'test');
+        localStorage.removeItem('test');
+        return true;
+      } catch (e) {
+        console.warn('Storage недоступен');
+        return false;
       }
     }
 
-    // --- Данные месяца ---
-    function getMonthData(monthName) {
-      let monthObj = data[monthName];
-      
-      // Если данных нет вообще
-      if (!monthObj) {
-        monthObj = { rate: DEFAULT_RATE, items: [] };
-        data[monthName] = monthObj;
-      }
-      // Если это старый формат (просто массив записей), мигрируем
-      else if (Array.isArray(monthObj)) {
-        const oldItems = monthObj;
-        monthObj = { rate: DEFAULT_RATE, items: oldItems };
-        data[monthName] = monthObj;
-        save(); // Сохраняем мигрированные данные
-      }
-      
-      return monthObj;
-    }
-
-    // --- Изменение ставки ---
-    function openRateModal() {
-      const monthData = getMonthData(currentMonth);
-      const currentRate = monthData.rate;
-
-      const html = `
-        <h3>Ставка: ${currentMonth}</h3>
-        <div class="input-group">
-          <label class="input-label">Текущая ставка (руб)</label>
-          <input type="number" id="rate_input" value="${currentRate}">
-        </div>
-        <div class="btn-row">
-          <button class="btn-secondary" onclick="closeModal()">Отмена</button>
-          <button class="btn-primary" onclick="saveMonthRate()">Сохранить</button>
-        </div>
-      `;
-      modalContent.innerHTML = html;
-      modal.classList.add('visible');
-      setTimeout(() => document.getElementById('rate_input').focus(), 100);
-    }
-
-    function saveMonthRate() {
-      const val = document.getElementById('rate_input').value;
-      if (val && !isNaN(val)) {
-        const monthData = getMonthData(currentMonth);
-        monthData.rate = parseInt(val);
+    // Получение и миграция данных месяца
+    function getMonthData(month) {
+      let obj = data[month];
+      if (!obj) {
+        obj = { rate: 3870, items: [], advance: 0, salary: 0, bonus: 0 };
+        data[month] = obj;
+      } else if (Array.isArray(obj)) {
+        // Миграция старого формата (массив) в новый (объект)
+        obj = { rate: 3870, items: obj, advance: 0, salary: 0, bonus: 0 };
+        data[month] = obj;
         save();
-        closeModal();
-        showMonth(currentMonth);
       }
+      return obj;
     }
 
-    // --- Тема ---
-    function toggleTheme() {
-      const body = document.body;
-      body.classList.toggle('dark-theme');
-      const isDark = body.classList.contains('dark-theme');
-      localStorage.setItem('dark_theme', isDark);
-      renderMonthList();
-    }
-
-    function applyTheme() {
-      const isDark = localStorage.getItem('dark_theme') === 'true';
-      if (isDark) {
-        document.body.classList.add('dark-theme');
-      }
-    }
+    // --- Логика ---
 
     function getFirstDay(dayStr) {
       if (!dayStr) return 999;
@@ -498,135 +362,57 @@
       return 1;
     }
 
-    function calculateDaysInDayoff(dayStr) {
-      if (!dayStr) return 1;
-      if (!isRange(dayStr)) return 1; 
-      const clean = dayStr.replace('–', '-');
-      const parts = clean.split('-').map(p => p.trim());
-      if (parts.length === 2) {
-        const start = parseInt(parts[0]);
-        const end = parseInt(parts[1]);
-        if (!isNaN(start) && !isNaN(end)) {
-          return Math.max(0, end - start + 1);
-        }
-      }
+    function calculateDaysInDayoff(dayRange) {
+      if (!dayRange) return 1;
+      if (!dayRange.includes('-') && !dayRange.includes('–')) return 1;
+      const parts = dayRange.replace('–', '-').split('-');
+      const start = parseInt(parts[0]);
+      const end = parseInt(parts[1]);
+      if (!isNaN(start) && !isNaN(end) && end >= start) return (end - start) + 1;
       return 1;
     }
 
-    // --- ИЗМЕНЕННАЯ ЛОГИКА ОПЛАТЫ МАГАЗИНОВ ---
     function calcTrip(trip, rate) {
-      const effectiveKM = trip.km ? (trip.km < 250 ? 250 : trip.km) : 0;
-      
-      // --- РАСЧЕТ БОНУСА ЗА ТОЧКИ ---
-      // Логика:
-      // 1. Если магазинов <= 4 -> бонус 0 (они уже входят в ставку).
-      // 2. Если магазинов > 4 -> считаем нечетные номера (5, 7, 9...) и считаем их по 10% каждый.
-      let storesBonus = 0;
-      if (trip.stores > 4) {
-        // Количество магазинов СВЫШЕ 4
-        const remaining = trip.stores - 4;
-        // Формула (Remaining + 1) / 2 дает 1 для 5, 1 для 7, 2 для 9, 2 для 11 и т.д.
-        // Это соответствует "каждый 5, 7, 9".
-        const paidStoresCount = Math.floor((remaining + 1) / 2);
-        storesBonus = paidStoresCount * 0.1; // 10% за каждый нечетный магазин после 4го.
-      }
-
-      const coeff = 1 + (trip.isWeekend ? 1 : 0) + effectiveKM / 250 + storesBonus;
+      const effectiveKM = trip.km ? Math.max(MIN_KM, trip.km) : 0;
+      const coeff = 1 + (trip.isWeekend ? 1 : 0) + effectiveKM / 250 + (trip.stores || 0) / 10;
       return {
         cost: Math.round(coeff * rate),
-        perDiem: trip.nights * 1400
+        perDiem: trip.nights * PER_DIEM_RATE
       };
-    }
-
-    // --- Функции Резервного копирования (Backup) ---
-
-    function exportData() {
-      const dataStr = JSON.stringify(data, null, 2);
-      const blob = new Blob([dataStr], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      const dateStr = new Date().toISOString().slice(0,10);
-      a.download = `salary_backup_${dateStr}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      alert("Файл сохранен! Проверьте папку 'Файлы' (или 'Загрузки') на телефоне.");
-    }
-
-    function triggerImport() {
-      document.getElementById('fileInput').click();
-    }
-
-    function handleFileImport(input) {
-      const file = input.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const importedData = JSON.parse(e.target.result);
-          if (typeof importedData === 'object' && importedData !== null) {
-            const confirmMsg = "Это удалит текущие данные и заменит их файлом. Продолжить?";
-            if (confirm(confirmMsg)) {
-              data = importedData;
-              save();
-              renderMonthList();
-              alert("Данные успешно восстановлены!");
-            }
-          } else {
-            alert("Ошибка: Некорректный формат файла.");
-          }
-        } catch (err) {
-          alert("Ошибка чтения файла: " + err.message);
-        }
-        input.value = '';
-      };
-      reader.readAsText(file);
     }
 
     // --- Отрисовка ---
 
     function renderMonthList() {
       currentMonth = '';
-      document.getElementById('fab-container').style.display = 'none';
-      
+      document.getElementById('fab-container').classList.add('hidden');
+
       const isDark = document.body.classList.contains('dark-theme');
       const themeIcon = isDark ? '☀️' : '🌙';
-      
+
       let html = `<h1>${appTitle}</h1>`;
+      
+      // Верхние контролы
       html += `
         <div class="top-controls">
           <button class="theme-btn" onclick="toggleTheme()" title="Тема">${themeIcon}</button>
-          <button class="backup-btn" onclick="exportData()">💾</button>
-          <button class="backup-btn" onclick="triggerImport()">📂</button>
+          <button class="backup-btn" onclick="exportData()" title="Экспорт">💾</button>
+          <button class="backup-btn" onclick="triggerImport()" title="Импорт">📂</button>
         </div>
       `;
 
-      // Обертка для сетки (3 в ряд)
       html += `<div class="months-grid">`;
-
-      months.forEach(month => {
-        const monthData = getMonthData(month);
-        const trips = monthData.items.filter(t => t.type === 'trip');
-        const rate = monthData.rate;
-        
-        let total = 0;
-        trips.forEach(t => {
-           const r = calcTrip(t, rate);
-           total += r.cost;
-        });
-        const badge = total > 0 ? `<div class="month-badge">${formatMoney(total)}</div>` : '';
-        
+      months.forEach(m => {
+        const mData = getMonthData(m);
+        const total = mData.items.filter(t => t.type === 'trip')
+                       .reduce((sum, t) => sum + calcTrip(t, mData.rate).cost, 0);
         html += `
-          <button class="month-btn" onclick="showMonth('${month}')">
-            <div class="month-name">${month}</div>
-            ${badge}
+          <button class="month-btn" onclick="showMonth('${m}')">
+            <div class="month-name">${m}</div>
+            ${total > 0 ? `<div class="month-badge">${formatMoney(total)}</div>` : '<div class="month-badge">—</div>'}
           </button>`;
       });
-
-      html += `</div>`; // Закрываем сетку
+      html += `</div>`;
       
       document.getElementById('app').innerHTML = html;
     }
@@ -635,19 +421,18 @@
       currentMonth = month;
       const monthData = getMonthData(month);
       const items = monthData.items;
-      const currentRate = monthData.rate;
+      const rate = monthData.rate;
       const sortedItems = [...items].sort((a, b) => getFirstDay(a.dayRange) - getFirstDay(b.dayRange));
-      
+
       let contentHtml = '';
 
       if (sortedItems.length === 0) {
-        contentHtml = `<div style="text-align:center;color:#999;padding:40px 0;">Нет записей на этот месяц</div>`;
+        contentHtml = `<div style="text-align:center;color:var(--text-sec);padding:40px 0;">Нет записей на этот месяц</div>`;
       } else {
         sortedItems.forEach(item => {
           if (item.type === 'dayoff') {
             const daysCount = calculateDaysInDayoff(item.dayRange);
             const daysText = daysCount > 1 ? ` (${daysCount} дн.)` : '';
-            
             contentHtml += `
               <div class="item dayoff-item">
                 <div class="item-header">
@@ -660,9 +445,8 @@
                 </div>
               </div>`;
           } else {
-            const r = calcTrip(item, currentRate);
+            const r = calcTrip(item, rate);
             const weekendBadge = item.isWeekend ? `<span class="weekend-badge">✔ Выходной</span>` : '';
-            
             contentHtml += `
               <div class="item trip-item">
                 <div class="item-header">
@@ -673,7 +457,7 @@
                   <div class="item-cost">${formatMoney(r.cost)}</div>
                 </div>
                 <div class="item-sub">
-                   КМ: ${item.km || 0} | Точки: ${item.stores} | Суточные: ${formatMoney(r.perDiem)}
+                   КМ: ${item.km || 0} | Точки: ${item.stores || 0} | Суточные: ${formatMoney(r.perDiem)}
                 </div>
                 <div class="item-actions">
                   <button class="action-btn" onclick="openForm('trip', '${item.id}')">✏️ Изменить</button>
@@ -687,7 +471,7 @@
       let totalCost = 0, totalPerDiem = 0, totalDayoffs = 0;
       items.forEach(t => {
         if (t.type === 'trip') {
-          const r = calcTrip(t, currentRate);
+          const r = calcTrip(t, rate);
           totalCost += r.cost;
           totalPerDiem += r.perDiem;
         } else if (t.type === 'dayoff') {
@@ -695,57 +479,95 @@
         }
       });
 
+      // Блок выплат
+      const paymentsHtml = `
+        <div class="total-block">
+          <h3>💰 Выплаты и начисления</h3>
+          <div class="input-group">
+            <label class="input-label">Аванс (получено)</label>
+            <input type="number" id="pay_advance" value="${monthData.advance || 0}" onchange="saveMonthlyPayments()" placeholder="0">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Зарплата (получено)</label>
+            <input type="number" id="pay_salary" value="${monthData.salary || 0}" onchange="saveMonthlyPayments()" placeholder="0">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Премия / Прочее</label>
+            <input type="number" id="pay_bonus" value="${monthData.bonus || 0}" onchange="saveMonthlyPayments()" placeholder="0">
+          </div>
+          <div class="total-row final" style="border-top:1px dashed var(--border-color); margin-top:10px;">
+            <span>Всего получено:</span>
+            <span style="color:var(--success)">${formatMoney((monthData.advance||0) + (monthData.salary||0) + (monthData.bonus||0))}</span>
+          </div>
+        </div>
+      `;
+
       const html = `
         <div class="month-header-controls">
-          <button class="back-btn" onclick="renderMonthList()">← Назад</button>
-          <button class="current-rate-btn" onclick="openRateModal()">⚙️ Ставка: ${currentRate}</button>
+          <button class="action-btn" onclick="renderMonthList()">← Назад</button>
+          <button class="current-rate-btn" onclick="openRateModal()">⚙️ Ставка: ${rate}₽</button>
         </div>
         <h2>${month}</h2>
         ${contentHtml}
-        ${items.length > 0 ? `
         <div class="total-block">
-          <div class="total-row"><span>Работа:</span> <span>${formatMoney(totalCost)}</span></div>
+          <div class="total-row"><span>Начислено за работу:</span> <span>${formatMoney(totalCost)}</span></div>
           <div class="total-row"><span>Суточные:</span> <span>${formatMoney(totalPerDiem)}</span></div>
           <div class="total-row" style="color: var(--success); font-weight: 600;">
             <span>Выходные (дни отдыха):</span> <span>${totalDayoffs}</span>
           </div>
-          <div class="total-row final"><span>Итого:</span> <span>${formatMoney(totalCost)}</span></div>
-        </div>` : ''}
+          <div class="total-row final"><span>Итого к выплате:</span> <span>${formatMoney(totalCost + totalPerDiem)}</span></div>
+        </div>
+        ${paymentsHtml}
       `;
-      
+
       document.getElementById('app').innerHTML = html;
-      document.getElementById('fab-container').style.display = 'block';
+      document.getElementById('fab-container').classList.remove('hidden');
     }
 
-    // --- Модальные окна и Формы ---
+    // Сохранение полей выплат
+    function saveMonthlyPayments() {
+      const monthData = getMonthData(currentMonth);
+      monthData.advance = parseInt(document.getElementById('pay_advance').value) || 0;
+      monthData.salary = parseInt(document.getElementById('pay_salary').value) || 0;
+      monthData.bonus = parseInt(document.getElementById('pay_bonus').value) || 0;
+      save();
+      // Не перерисовываем весь экран, чтобы не терять фокус с инпута
+    }
 
-    const modal = document.getElementById('modal');
-    const modalContent = document.getElementById('modal-content');
+    // --- Модальные окна ---
 
     function closeModal() {
-      modal.classList.remove('visible');
-      setTimeout(() => { modalContent.innerHTML = ''; }, 300);
+      document.getElementById('modal').classList.remove('visible');
+      setTimeout(() => { document.getElementById('modal-content').innerHTML = ''; }, 300);
     }
 
-    function handleEnterKey(e, callback) {
-      if (e.key === 'Enter') {
-        e.preventDefault(); 
-        callback();
-      }
+    function openRateModal() {
+      const monthData = getMonthData(currentMonth);
+      const html = `
+        <h3>Настройка ставки</h3>
+        <p style="color:var(--text-sec); font-size:14px; margin-bottom:15px;">Базовая ставка для расчета поездок в этом месяце.</p>
+        <div class="input-group">
+          <label class="input-label">Ставка (руб)</label>
+          <input type="number" id="new_rate" value="${monthData.rate}" inputmode="numeric">
+        </div>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="closeModal()">Отмена</button>
+          <button class="btn-primary" onclick="saveRate()">Сохранить</button>
+        </div>
+      `;
+      document.getElementById('modal-content').innerHTML = html;
+      document.getElementById('modal').classList.add('visible');
     }
 
-    function toggleWeekend() {
-      const btn = document.getElementById('weekendBtn');
-      const icon = document.getElementById('weekendIcon');
-      const isActive = btn.classList.contains('active');
-      
-      if (isActive) {
-        btn.classList.remove('active');
-        icon.innerHTML = '';
-      } else {
-        btn.classList.add('active');
-        icon.innerHTML = '✔';
+    function saveRate() {
+      const newRate = parseInt(document.getElementById('new_rate').value);
+      if (newRate && newRate > 0) {
+        const monthData = getMonthData(currentMonth);
+        monthData.rate = newRate;
+        save();
+        showMonth(currentMonth);
       }
+      closeModal();
     }
 
     function openForm(type, itemId = null) {
@@ -767,19 +589,19 @@
           <h3>${isEdit ? 'Редактировать' : 'Добавить'} поездку</h3>
           <div class="input-group">
             <label class="input-label">Даты (напр. 5 или 5-7)</label>
-            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="5-7">
+            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="5-7" inputmode="numeric">
           </div>
           <div class="input-group">
             <label class="input-label">Направление / Город</label>
-            <input type="text" id="f_location" value="${location}" placeholder="Москва">
+            <input type="text" id="f_location" value="${location}" placeholder="Москва" autocapitalize="words">
           </div>
           <div class="input-group">
             <label class="input-label">Километры (если < 250, считается как 250)</label>
-            <input type="number" id="f_km" value="${km}" placeholder="0">
+            <input type="number" id="f_km" value="${km}" placeholder="0" inputmode="decimal">
           </div>
           <div class="input-group">
             <label class="input-label">Точки (магазины)</label>
-            <input type="number" id="f_stores" value="${stores}" placeholder="0">
+            <input type="number" id="f_stores" value="${stores}" placeholder="0" inputmode="numeric">
           </div>
           
           <div class="toggle-btn ${isWeekend ? 'active' : ''}" id="weekendBtn" onclick="toggleWeekend()">
@@ -789,8 +611,8 @@
           <input type="hidden" id="f_isWeekend" value="${isWeekend}">
 
           <div class="input-group">
-            <label class="input-label">Ночевки (x1400₽)</label>
-            <input type="number" id="f_nights" value="${nights}" placeholder="0">
+            <label class="input-label">Ночевки (x${PER_DIEM_RATE}₽)</label>
+            <input type="number" id="f_nights" value="${nights}" placeholder="0" inputmode="numeric">
           </div>
           <div class="btn-row">
             <button class="btn-secondary" onclick="closeModal()">Отмена</button>
@@ -802,8 +624,8 @@
         html = `
           <h3>${isEdit ? 'Редактировать' : 'Добавить'} выходной</h3>
           <div class="input-group">
-            <label class="input-label">Дата</label>
-            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="9-14">
+            <label class="input-label">Дата (или диапазон, напр. 9-11)</label>
+            <input type="text" id="f_dayRange" value="${dayRange}" placeholder="9-11" inputmode="numeric">
           </div>
           <div class="btn-row">
             <button class="btn-secondary" onclick="closeModal()">Отмена</button>
@@ -812,46 +634,41 @@
         `;
       }
 
-      modalContent.innerHTML = html;
-      modal.classList.add('visible');
+      document.getElementById('modal-content').innerHTML = html;
+      document.getElementById('modal').classList.add('visible');
       setTimeout(() => document.getElementById('f_dayRange').focus(), 100);
 
       const saveCallback = () => saveForm(type, itemId);
       document.getElementById('btnSave').onclick = saveCallback;
-      
-      const inputs = modalContent.querySelectorAll('input:not([type=hidden])');
-      inputs.forEach(input => {
-        input.onkeyup = (e) => handleEnterKey(e, saveCallback);
+      document.querySelectorAll('#modal input').forEach(input => {
+        input.onkeyup = (e) => { if (e.key === 'Enter') saveCallback(); };
       });
     }
 
-    let deleteId = null;
-    function confirmDelete(id) {
-      deleteId = id;
-      const html = `
-        <h3 style="color:var(--danger)">Удалить запись?</h3>
-        <p style="color:#666; margin-bottom:20px;">Это действие нельзя будет отменить.</p>
-        <div class="btn-row">
-          <button class="btn-secondary" onclick="closeModal()">Отмена</button>
-          <button class="btn-danger" onclick="executeDelete()">Удалить</button>
-        </div>
-      `;
-      modalContent.innerHTML = html;
-      modal.classList.add('visible');
-    }
-
-    function executeDelete() {
-      if (deleteId && currentMonth) {
-        const monthData = getMonthData(currentMonth);
-        monthData.items = monthData.items.filter(t => t.id !== deleteId);
-        save();
-        showMonth(currentMonth);
+    function toggleWeekend() {
+      const btn = document.getElementById('weekendBtn');
+      const icon = document.getElementById('weekendIcon');
+      const hiddenInput = document.getElementById('f_isWeekend');
+      
+      if (!btn || !icon || !hiddenInput) return;
+      const isActive = btn.classList.contains('active');
+      
+      if (isActive) {
+        btn.classList.remove('active');
+        icon.innerHTML = '';
+        hiddenInput.value = 'false';
+      } else {
+        btn.classList.add('active');
+        icon.innerHTML = '✔';
+        hiddenInput.value = 'true';
       }
-      closeModal();
     }
 
     function saveForm(type, itemId) {
-      const dayRange = document.getElementById('f_dayRange').value.trim();
+      const dayRangeEl = document.getElementById('f_dayRange');
+      if (!dayRangeEl) return;
+      
+      const dayRange = dayRangeEl.value.trim();
       if (!dayRange) {
         alert('Укажите дату');
         return;
@@ -875,31 +692,106 @@
       }
 
       const monthData = getMonthData(currentMonth);
-      
       if (itemId) {
-        const index = monthData.items.findIndex(t => t.id === itemId);
-        if (index !== -1) monthData.items[index] = newItem;
+        const idx = monthData.items.findIndex(t => t.id === itemId);
+        if (idx !== -1) monthData.items[idx] = newItem;
       } else {
         monthData.items.push(newItem);
       }
 
       save();
+      saveMonthlyPayments(); // Сохраняем текущие выплаты, чтобы они не сбились
       closeModal();
       showMonth(currentMonth);
     }
 
-    // Инициализация
-    window.addEventListener('load', applyTheme);
-    renderMonthList();
-    modal.onclick = (e) => { if (e.target === modal) closeModal(); };
-
-    const originalToggle = toggleWeekend;
-    toggleWeekend = function() {
-      const btn = document.getElementById('weekendBtn');
-      const hiddenInput = document.getElementById('f_isWeekend');
-      originalToggle();
-      hiddenInput.value = btn.classList.contains('active') ? 'true' : 'false';
+    let deleteId = null;
+    function confirmDelete(id) {
+      deleteId = id;
+      const html = `
+        <h3 style="color:var(--danger)">Удалить запись?</h3>
+        <p style="color:var(--text-sec); margin-bottom:20px;">Это действие нельзя будет отменить.</p>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="closeModal()">Отмена</button>
+          <button class="btn-danger" onclick="executeDelete()">Удалить</button>
+        </div>
+      `;
+      document.getElementById('modal-content').innerHTML = html;
+      document.getElementById('modal').classList.add('visible');
     }
+
+    function executeDelete() {
+      if (deleteId && currentMonth) {
+        const monthData = getMonthData(currentMonth);
+        monthData.items = monthData.items.filter(t => t.id !== deleteId);
+        save();
+        showMonth(currentMonth);
+      }
+      closeModal();
+    }
+
+    // --- Темы и Импорт/Экспорт ---
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark-theme');
+      const isDark = document.body.classList.contains('dark-theme');
+      localStorage.setItem('dark_theme', isDark);
+      renderMonthList(); // Перерисовать иконку
+    }
+
+    function exportData() {
+      if (!checkStorage()) { alert('Нет доступа к хранилищу для экспорта'); return; }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "salary_backup_" + new Date().toISOString().slice(0,10) + ".json");
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+    }
+
+    function triggerImport() {
+      document.getElementById('fileInput').click();
+    }
+
+    function handleFileImport(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const json = JSON.parse(e.target.result);
+          if (confirm('Загрузить бэкап? Текущие данные будут заменены.')) {
+            data = json;
+            save();
+            renderMonthList();
+            alert('Данные успешно загружены');
+          }
+        } catch (err) {
+          alert('Ошибка чтения файла');
+        }
+      };
+      reader.readAsText(file);
+      input.value = ''; // сброс
+    }
+
+    // --- Инициализация ---
+    document.getElementById('modal').onclick = (e) => { 
+      if (e.target.id === 'modal') closeModal(); 
+    };
+
+    window.addEventListener('load', () => {
+      if (localStorage.getItem('dark_theme') === 'true') {
+        document.body.classList.add('dark-theme');
+      }
+      
+      // Проверка хранения
+      if (!checkStorage()) {
+        setTimeout(() => alert('Внимание: LocalStorage недоступен. Данные не будут сохраняться после закрытия вкладки.'), 1000);
+      }
+
+      renderMonthList();
+    });
 
   </script>
 </body>
