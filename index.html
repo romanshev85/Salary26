@@ -5,12 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Зарплата 2026</title>
 
-  <!-- PWA Meta Tags -->
-  <link rel="manifest" href="manifest.json" onerror="this.remove()">
-  <meta name="theme-color" content="#F2F2F7" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-
   <style>
     :root {
       /* Основные цвета */
@@ -19,7 +13,7 @@
       --success: #34c759;
       --danger: #ff3b30;
       --warning: #ff9500;
-      
+
       /* Фоны и текст */
       --bg: #F2F2F7; 
       --card-bg: #ffffff;
@@ -27,7 +21,7 @@
       --text-sec: #8e8e93; 
       --border-color: #e5e5ea;
       --input-bg: #F2F2F7;
-      
+
       /* Эффекты */
       --shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       --shadow-float: 0 4px 12px rgba(0,0,0,0.1);
@@ -46,7 +40,7 @@
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
@@ -63,7 +57,6 @@
       max-width: 600px; 
       margin: 0 auto; 
       padding: 16px 12px; 
-      /* ИСПРАВЛЕНИЕ ДЛЯ IPHONE 16 PRO MAX: отступ сверху учитывает островок камеры */
       padding-top: max(20px, env(safe-area-inset-top));
     }
 
@@ -71,9 +64,7 @@
     h1, h2, h3 { margin: 0; text-align: center; letter-spacing: -0.5px; }
     h1 { 
       font-size: 26px; font-weight: 800; margin: 10px 0 20px; color: var(--text); 
-      cursor: text; /* Показывает, что можно редактировать */
-      padding: 5px;
-      border-radius: 8px;
+      cursor: text; padding: 8px; border-radius: 8px; 
       transition: background 0.2s;
     }
     h1:active { background: rgba(0,0,0,0.05); }
@@ -83,7 +74,7 @@
     h3 { font-size: 14px; font-weight: 600; margin: 12px 0 8px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.5px; }
 
     button { cursor: pointer; border: none; outline: none; font-family: inherit; -webkit-appearance: none; }
-    
+
     /* ШАПКА */
     .top-controls {
       display: flex;
@@ -91,55 +82,45 @@
       align-items: center;
       margin-bottom: 20px;
       padding: 0 4px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
+    /* Улучшенные кнопки темы */
     .theme-btn {
       background: var(--card-bg);
       color: var(--text);
-      width: 36px;
-      height: 36px;
-      border-radius: 10px; 
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .theme-btn:active { transform: scale(0.95); }
+
+    /* Группировка действий */
+    .actions-group { display: flex; gap: 8px; }
+
+    .action-icon-btn {
+      background: var(--card-bg);
+      color: var(--text);
+      height: 40px;
+      width: 40px;
+      border-radius: 10px;
       font-size: 18px;
       box-shadow: var(--shadow);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+      transition: all 0.2s;
     }
-    .theme-btn:active { transform: scale(0.9); }
-
-    .actions-group { display: flex; gap: 8px; }
-
-    .backup-btn {
-      background: var(--card-bg);
-      color: var(--primary);
-      height: 36px;
-      padding: 0 14px; 
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-    .backup-btn:active { transform: scale(0.96); opacity: 0.8; }
-
-    /* Кнопка Назад */
-    .header-back-btn {
-      background: transparent;
-      color: var(--primary);
-      padding: 6px 10px;
-      margin-left: -12px; 
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-    }
-    .header-back-btn:active { background: rgba(0,0,0,0.05); }
+    .action-icon-btn:active { transform: scale(0.96); }
+    .action-icon-btn.danger { color: var(--danger); }
 
     /* Сетка месяцев */
     .months-grid {
@@ -149,6 +130,7 @@
     }
     @media (max-width: 380px) { .months-grid { grid-template-columns: 1fr; } }
 
+    /* Улучшение кнопок месяцев */
     .month-btn {
       display: flex;
       flex-direction: column;
@@ -159,33 +141,12 @@
       border-radius: 14px; 
       box-shadow: var(--shadow);
       color: var(--text);
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+      transition: transform 0.2s ease, box-shadow 0.2s;
       border: 1px solid rgba(0,0,0,0.02);
     }
     .month-btn:active { transform: scale(0.96); }
-    
-    /* ИЗМЕНЕНИЕ: Синий цвет названия месяца */
-    .month-name { 
-      font-size: 16px; font-weight: 700; margin-bottom: 2px; 
-      color: var(--primary); 
-    }
-    
+    .month-name { font-size: 16px; font-weight: 700; margin-bottom: 2px; color: var(--primary); }
     .month-badge { font-size: 13px; color: var(--text-sec); font-weight: 500; }
-
-    .month-header-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .current-rate-btn {
-      background: rgba(0, 122, 255, 0.1);
-      color: var(--primary);
-      padding: 6px 12px;
-      border-radius: 16px;
-      font-size: 12px;
-      font-weight: 700;
-    }
 
     /* Карточки */
     .item {
@@ -196,9 +157,14 @@
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
+      transition: box-shadow 0.2s, transform 0.2s;
+      animation: slideIn 0.3s ease-out;
     }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
     .dayoff-item { border-left: 4px solid var(--success); }
     .trip-item { border-left: 4px solid var(--primary); }
+    .item:hover { transform: translateY(-2px); box-shadow: var(--shadow-float); }
 
     .item-header {
       display: flex;
@@ -239,10 +205,12 @@
       background: var(--input-bg);
       color: var(--text);
       flex: 1;
+      transition: background 0.2s, transform 0.2s;
     }
+    .action-btn:hover { transform: scale(1.02); }
     .action-btn.delete { background: rgba(255, 59, 48, 0.1); color: var(--danger); }
 
-    /* Блоки итогов */
+    /* Блок итогов */
     .total-block {
       background: var(--card-bg);
       padding: 16px;
@@ -253,29 +221,28 @@
     }
     .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: var(--text-sec); }
     .total-row span:last-child { color: var(--text); font-weight: 600; }
-    
     .total-row.final { 
       margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border-color); 
-      font-size: 18px; color: var(--primary); 
+      font-size: 18px; color: var(--primary); font-weight: 700;
     }
 
-    /* ИНПУТЫ */
+    /* Вводы */
     .input-group { margin-bottom: 12px; }
     .input-label { display: block; font-size: 11px; color: var(--text-sec); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     input:not([type="hidden"]) {
       width: 100%;
-      padding: 8px 12px;
+      padding: 10px 12px;
       background: var(--input-bg);
       border: 1px solid transparent;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 16px;
       color: var(--text);
-      font-weight: 400;
+      font-weight: 500;
       -webkit-appearance: none;
       transition: all 0.2s;
-      line-height: 1.2;
+      line-height: 1.4;
     }
-    input:focus { background: var(--card-bg); border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0,122,255,0.1); }
+    input:focus { background: var(--card-bg); border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,122,255,0.15); }
 
     /* FAB */
     .fab-container {
@@ -284,14 +251,16 @@
     }
     .fab-row { display: flex; gap: 10px; pointer-events: auto; }
     .fab-btn {
-      flex: 1; padding: 12px; border-radius: 14px; color: white; font-weight: 700;
-      box-shadow: var(--shadow-float); display: flex; align-items: center; justify-content: center; gap: 6px;
-      font-size: 14px;
+      flex: 1; padding: 14px; border-radius: 16px; color: white; font-weight: 700;
+      box-shadow: var(--shadow-float); display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 15px;
       background: var(--primary-gradient);
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+    .fab-btn:hover { transform: scale(1.02); }
+    .fab-btn.green { background: linear-gradient(135deg, #34c759, #28a745); }
 
-    /* МОДАЛЬНЫЕ ОКНА */
+    /* Модальные окна */
     .modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.4);
@@ -302,52 +271,46 @@
       opacity: 0; pointer-events: none;
       transition: opacity 0.3s ease;
     }
-
     body.modal-open { overflow: hidden; position: fixed; width: 100%; }
-
     .modal.visible { opacity: 1; pointer-events: auto; }
-    
     .modal-content {
       background: var(--card-bg);
       width: 100%;
       max-width: 500px;
-      border-radius: 20px 20px 0 0;
-      padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+      border-radius: 24px 24px 0 0;
+      padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
       transform: translateY(100%);
       transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-      max-height: 70vh;
+      max-height: 85vh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
     }
-
-    .modal.visible .modal-content {
-      transform: translateY(0);
-    }
+    .modal.visible .modal-content { transform: translateY(0); }
 
     @media (min-width: 600px) {
       .modal { align-items: center; }
-      .modal-content { border-radius: 20px; transform: translateY(20px); opacity: 0; max-height: 70vh; padding: 24px; }
+      .modal-content { border-radius: 24px; transform: translateY(20px); opacity: 0; padding: 30px; }
       .modal.visible .modal-content { transform: translateY(0); opacity: 1; }
     }
 
-    /* Toggle Button */
+    /* Toggle button */
     .toggle-btn {
       display: flex; align-items: center; justify-content: center;
-      width: 100%; padding: 10px;
-      border: 2px solid var(--border-color); border-radius: 10px;
+      width: 100%; padding: 12px;
+      border: 2px solid var(--border-color); border-radius: 12px;
       font-weight: 600; color: var(--text-sec);
       background: var(--input-bg);
       transition: all 0.2s;
-      cursor: pointer; margin-bottom: 12px; font-size: 14px;
+      cursor: pointer; margin-bottom: 16px; font-size: 15px;
     }
     .toggle-btn:active { transform: scale(0.98); }
     .toggle-btn.active { border-color: var(--warning); background: rgba(255, 149, 0, 0.1); color: var(--warning); }
     .toggle-icon {
-      width: 20px; height: 20px;
+      width: 22px; height: 22px;
       border-radius: 50%;
       border: 2px solid var(--text-sec);
-      margin-right: 8px;
+      margin-right: 10px;
       display: flex; align-items: center; justify-content: center;
       background: var(--card-bg);
       transition: all 0.2s; flex-shrink: 0;
@@ -355,23 +318,55 @@
     }
     .toggle-btn.active .toggle-icon { border-color: var(--warning); background: var(--warning); color: white; border: none; }
 
-    .btn-row { display: flex; gap: 10px; margin-top: 20px; }
-    .btn-row button { flex: 1; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 15px; }
+    /* Buttons Row */
+    .btn-row { display: flex; gap: 12px; margin-top: 24px; }
+    .btn { padding: 12px; border-radius: 12px; font-weight: 700; font-size: 15px; flex: 1; }
     .btn-primary { background: var(--primary-gradient); color: white; box-shadow: 0 4px 12px rgba(0,122,255,0.3); }
     .btn-secondary { background: var(--input-bg); color: var(--text); }
     .btn-danger { background: var(--danger); color: white; box-shadow: 0 4px 12px rgba(255,59,48,0.3); }
 
     .hidden { display: none !important; }
+
+    /* Toasts */
+    #toast-container {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      z-index: 10000; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px;
+      pointer-events: none;
+    }
+    .toast {
+      background: rgba(30, 30, 30, 0.9);
+      backdrop-filter: blur(10px);
+      color: white; padding: 12px 16px; border-radius: 50px;
+      font-size: 14px; font-weight: 600; text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      opacity: 0; transform: translateY(-20px); transition: all 0.3s ease;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .toast.visible { opacity: 1; transform: translateY(0); }
+    .toast.success { background: rgba(52, 199, 89, 0.9); }
+    .toast.error { background: rgba(255, 59, 48, 0.9); }
+
+    /* Loading Screen */
+    #loading-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg); z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: var(--text-sec); font-weight: 600;
+      transition: opacity 0.3s;
+    }
   </style>
 </head>
 <body>
+
+  <div id="loading-screen">Загрузка...</div>
+  <div id="toast-container"></div>
 
   <div class="container" id="app"></div>
   
   <div id="fab-container" class="fab-container hidden">
     <div class="fab-row">
       <button class="fab-btn" onclick="openForm('trip')">➕ Поездка</button>
-      <button class="fab-btn" style="background: linear-gradient(135deg, #34c759, #28a745);" onclick="openForm('dayoff')">➕ Выходной</button>
+      <button class="fab-btn green" onclick="openForm('dayoff')">➕ Выходной</button>
     </div>
   </div>
 
@@ -382,64 +377,112 @@
   <input type="file" id="fileInput" style="display: none;" accept=".json" onchange="handleFileImport(this)" />
 
   <script>
-    // Получаем название из хранилища или ставим дефолт
-    let appTitle = localStorage.getItem('app_title') || "Зарплата 2026";
-    
+    // Global Error Handler to catch crashes
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.error(error);
+      const loading = document.getElementById('loading-screen');
+      if(loading) loading.style.display = 'none';
+      alert("Ошибка приложения: " + message + "\nПожалуйста, перезагрузите страницу.");
+      return true;
+    };
+
+    // --- Constants & State ---
     const PER_DIEM_RATE = 1400;
     const MIN_KM = 250;
-    const months = [
-      'Январь','Февраль','Март','Апрель','Май','Июнь',
-      'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'
-    ];
-
-    let data = JSON.parse(localStorage.getItem('salary2026')) || {};
+    const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+    
+    let appTitle = "Зарплата 2026"; // Default title
+    let data = {}; // Default data
     let currentMonth = '';
+    let pendingCallback = null;
+    let isStorageAvailable = false;
 
+    // --- Safe Storage Helpers ---
+    function initStorage() {
+      try {
+        const test = '__storage_test__';
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        isStorageAvailable = true;
+        
+        // Load Title safely
+        const storedTitle = localStorage.getItem('app_title');
+        if (storedTitle) appTitle = storedTitle;
+
+        // Load Data safely
+        const storedData = localStorage.getItem('salary2026');
+        if (storedData) {
+          try {
+            data = JSON.parse(storedData);
+          } catch (e) {
+            console.warn("Corrupt data found, resetting", e);
+            localStorage.removeItem('salary2026');
+            data = {};
+            showToast('Данные повреждены и сброшены', 'error');
+          }
+        }
+      } catch (e) {
+        console.warn("LocalStorage not available", e);
+        isStorageAvailable = false;
+        showToast('Хранилище недоступно. Данные не сохранятся.', 'error');
+      }
+    }
+    
     const formatMoney = (num) => new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
     
-    // Сохранение названия
-    function updateTitle(el) {
-      const newTitle = el.innerText.trim();
-      if (newTitle) {
-        appTitle = newTitle;
-        localStorage.setItem('app_title', newTitle);
-        document.title = newTitle;
-      }
-    }
-    
-    // Предотвращаем перенос строки в заголовке при Enter
-    function handleTitleEnter(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        e.target.blur(); // Снимаем фокус
-      }
-    }
-    
     function save() {
-      localStorage.setItem('salary2026', JSON.stringify(data));
-    }
-
-    function checkStorage() {
+      if (!isStorageAvailable) return;
       try {
-        localStorage.setItem('test', 'test');
-        localStorage.removeItem('test');
-        return true;
+        localStorage.setItem('salary2026', JSON.stringify(data));
+        localStorage.setItem('app_title', appTitle);
       } catch (e) {
-        return false;
+        console.error("Save failed", e);
+        showToast('Ошибка сохранения', 'error');
       }
     }
 
+    function showToast(msg, type = 'normal') {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      el.innerText = msg;
+      container.appendChild(el);
+      void el.offsetWidth; 
+      el.classList.add('visible');
+      setTimeout(() => {
+        el.classList.remove('visible');
+        setTimeout(() => el.remove(), 300);
+      }, 3000);
+    }
+
+    function showConfirm(title, message, onConfirm) {
+      const html = `
+        <h3 style="color:var(--danger); margin-bottom:8px;">${title}</h3>
+        <div class="modal-text">${message}</div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+          <button class="btn btn-danger" id="confirmActionBtn">Подтвердить</button>
+        </div>
+      `;
+      document.getElementById('modal-content').innerHTML = html;
+      document.getElementById('modal').classList.add('visible');
+      document.body.classList.add('modal-open');
+      
+      const btn = document.getElementById('confirmActionBtn');
+      btn.onclick = () => {
+        onConfirm();
+        closeModal();
+      };
+    }
+
+    // --- Data Logic ---
     function getMonthData(month) {
-      let obj = data[month];
-      if (!obj) {
-        obj = { rate: 3870, items: [], advance: 0, salary: 0, bonus: 0 };
-        data[month] = obj;
-      } else if (Array.isArray(obj)) {
-        obj = { rate: 3870, items: obj, advance: 0, salary: 0, bonus: 0 };
-        data[month] = obj;
-        save();
+      if (!data[month]) {
+        data[month] = { rate: 3870, items: [], advance: 0, salary: 0, bonus: 0 };
+      } else if (Array.isArray(data[month])) {
+        data[month] = { rate: 3870, items: data[month], advance: 0, salary: 0, bonus: 0 };
       }
-      return obj;
+      return data[month];
     }
 
     function getFirstDay(dayStr) {
@@ -448,9 +491,7 @@
       return isNaN(num) ? 999 : num;
     }
 
-    function isRange(dayStr) {
-      return dayStr && (dayStr.includes('-') || dayStr.includes('–'));
-    }
+    function isRange(dayStr) { return dayStr && (dayStr.includes('-') || dayStr.includes('–')); }
 
     function suggestNights(dayStr) {
       if (!isRange(dayStr)) return 0;
@@ -459,9 +500,7 @@
       if (parts.length === 2) {
         const start = parseInt(parts[0]);
         const end = parseInt(parts[1]);
-        if (!isNaN(start) && !isNaN(end)) {
-          return end >= start ? end - start : 2;
-        }
+        if (!isNaN(start) && !isNaN(end)) return end >= start ? end - start : 2;
       }
       return 1;
     }
@@ -478,24 +517,39 @@
 
     function calcTrip(trip, rate) {
       const effectiveKM = trip.km ? Math.max(MIN_KM, trip.km) : 0;
-      
       let storeBonusCoefficient = 0;
       const stores = trip.stores || 0;
-      
       if (stores >= 5) {
         const paidCount = Math.floor((stores - 3) / 2);
         storeBonusCoefficient = paidCount * 0.1;
       }
-
-      const coeff = 1 
-        + (trip.isWeekend ? 1 : 0) 
-        + effectiveKM / 250 
-        + storeBonusCoefficient;
-
+      const coeff = 1 + (trip.isWeekend ? 1 : 0) + effectiveKM / 250 + storeBonusCoefficient;
       return {
         cost: Math.round(coeff * rate),
         perDiem: trip.nights * PER_DIEM_RATE
       };
+    }
+
+    // --- UI Rendering ---
+
+    function updateTitle(el) {
+      const newTitle = el.innerText.trim();
+      if (newTitle) {
+        appTitle = newTitle;
+        document.title = newTitle;
+        save();
+      }
+    }
+    
+    function handleTitleEnter(e) {
+      if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark-theme');
+      const isDark = document.body.classList.contains('dark-theme');
+      if (isStorageAvailable) localStorage.setItem('dark_theme', isDark);
+      renderMonthList();
     }
 
     function renderMonthList() {
@@ -505,20 +559,16 @@
       const isDark = document.body.classList.contains('dark-theme');
       const themeIcon = isDark ? '☀️' : '🌙';
 
-      // Добавил contenteditable и oninput для редактирования названия
-      let html = `<h1 contenteditable="true" oninput="updateTitle(this)" onkeydown="handleTitleEnter(event)">${appTitle}</h1>`;
-      
-      html += `
+      let html = `
+        <h1 contenteditable="true" oninput="updateTitle(this)" onkeydown="handleTitleEnter(event)">${appTitle}</h1>
+
         <div class="top-controls">
           <button class="theme-btn" onclick="toggleTheme()">${themeIcon}</button>
           
           <div class="actions-group">
-            <button class="backup-btn" onclick="exportData()">
-              💾 <span style="display:none; @media(min-width:400px){display:inline;}">Сохранить</span>
-            </button>
-            <button class="backup-btn" onclick="triggerImport()">
-              📂 <span style="display:none; @media(min-width:400px){display:inline;}">Загрузить</span>
-            </button>
+            <button class="action-icon-btn" onclick="exportData()" title="Сохранить">💾</button>
+            <button class="action-icon-btn" onclick="triggerImport()" title="Загрузить">📂</button>
+            <button class="action-icon-btn danger" onclick="confirmClearAll()" title="Очистить">🗑️</button>
           </div>
         </div>
       `;
@@ -547,7 +597,6 @@
       const sortedItems = [...items].sort((a, b) => getFirstDay(a.dayRange) - getFirstDay(b.dayRange));
 
       let contentHtml = '';
-
       if (sortedItems.length === 0) {
         contentHtml = `<div style="text-align:center;color:var(--text-sec);padding:40px 0; opacity: 0.6;">Нет записей на этот месяц</div>`;
       } else {
@@ -603,20 +652,20 @@
 
       const paymentsHtml = `
         <div class="total-block">
-          <h3>Начислено</h3>
+          <h3>Финансы</h3>
           <div class="input-group">
-            <label class="input-label">Аванс (получено)</label>
+            <label class="input-label">Аванс</label>
             <input type="number" id="pay_advance" value="${monthData.advance || 0}" onchange="saveMonthlyPayments()" placeholder="0">
           </div>
           <div class="input-group">
-            <label class="input-label">Зарплата (получено)</label>
+            <label class="input-label">Зарплата</label>
             <input type="number" id="pay_salary" value="${monthData.salary || 0}" onchange="saveMonthlyPayments()" placeholder="0">
           </div>
           <div class="input-group">
             <label class="input-label">Премия / Прочее</label>
             <input type="number" id="pay_bonus" value="${monthData.bonus || 0}" onchange="saveMonthlyPayments()" placeholder="0">
           </div>
-          <div class="total-row final" style="border-top:1px dashed var(--border-color); margin-top:12px;">
+          <div class="total-row final">
             <span>Всего получено:</span>
             <span id="total-received-sum" style="color: var(--success);">${formatMoney((monthData.advance||0) + (monthData.salary||0) + (monthData.bonus||0))}</span>
           </div>
@@ -624,9 +673,9 @@
       `;
 
       const html = `
-        <div class="month-header-controls">
-          <button class="header-back-btn" onclick="renderMonthList()">← Назад</button>
-          <button class="current-rate-btn" onclick="openRateModal()">⚙️ Ставка: ${rate}₽</button>
+        <div class="top-controls" style="margin-bottom: 10px;">
+          <button class="header-back-btn" onclick="renderMonthList()" style="background:var(--card-bg); padding:8px 12px; border-radius:8px; font-weight:600; color:var(--primary);">← Назад</button>
+          <button class="action-icon-btn" style="width:auto; padding:0 12px; font-size:13px; gap:6px;" onclick="openRateModal()">⚙️ Ставка: ${rate}₽</button>
         </div>
         <h2>${month}</h2>
         ${contentHtml}
@@ -643,6 +692,17 @@
 
       document.getElementById('app').innerHTML = html;
       document.getElementById('fab-container').classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+
+    // --- Modals & Forms ---
+    function closeModal() {
+      const modal = document.getElementById('modal');
+      modal.classList.remove('visible');
+      setTimeout(() => { 
+        document.getElementById('modal-content').innerHTML = ''; 
+        document.body.classList.remove('modal-open');
+      }, 300);
     }
 
     function saveMonthlyPayments() {
@@ -654,54 +714,43 @@
       monthData.advance = advance;
       monthData.salary = salary;
       monthData.bonus = bonus;
-      
+
       save();
-      
+
       const totalEl = document.getElementById('total-received-sum');
       if (totalEl) {
         totalEl.textContent = formatMoney(advance + salary + bonus);
       }
     }
 
-    function closeModal() {
-      const modal = document.getElementById('modal');
-      modal.classList.remove('visible');
-      setTimeout(() => { 
-        document.getElementById('modal-content').innerHTML = ''; 
-        document.body.classList.remove('modal-open');
-        window.scrollTo(0, document.body.scrollTop); 
-      }, 300);
-    }
-
     function openRateModal() {
       const monthData = getMonthData(currentMonth);
       const html = `
         <h3>Настройка ставки</h3>
-        <p style="color:var(--text-sec); font-size:13px; margin-bottom:16px;">Базовая ставка для расчета поездок в этом месяце.</p>
+        <div class="modal-text">Базовая ставка для расчета поездок в этом месяце.</div>
         <div class="input-group">
           <label class="input-label">Ставка (руб)</label>
           <input type="number" id="new_rate" value="${monthData.rate}" inputmode="numeric">
         </div>
         <div class="btn-row">
-          <button class="btn-secondary" onclick="closeModal()">Отмена</button>
-          <button class="btn-primary" id="btnSave">Сохранить</button>
+          <button class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+          <button class="btn btn-primary" id="btnSave">Сохранить</button>
         </div>
       `;
       document.getElementById('modal-content').innerHTML = html;
       document.getElementById('modal').classList.add('visible');
       document.body.classList.add('modal-open');
-      document.getElementById('btnSave').onclick = saveRate;
-    }
-
-    function saveRate() {
-      const newRate = parseInt(document.getElementById('new_rate').value);
-      if (newRate && newRate > 0) {
-        const monthData = getMonthData(currentMonth);
-        monthData.rate = newRate;
-        save();
-        showMonth(currentMonth);
-      }
-      closeModal();
+      document.getElementById('btnSave').onclick = () => {
+        const newRate = parseInt(document.getElementById('new_rate').value);
+        if (newRate && newRate > 0) {
+          const monthData = getMonthData(currentMonth);
+          monthData.rate = newRate;
+          save();
+          showMonth(currentMonth);
+          showToast('Ставка обновлена', 'success');
+        }
+        closeModal();
+      };
     }
 
     function openForm(type, itemId = null) {
@@ -736,9 +785,6 @@
           <div class="input-group">
             <label class="input-label">Точки (магазины)</label>
             <input type="number" id="f_stores" value="${stores}" placeholder="0" inputmode="numeric">
-            <div style="font-size:11px; color:var(--text-sec); margin-top:4px; line-height:1.3;">
-              Оплата: каждый 2-й магазин с 5-го (5, 7, 9...) по 10% от ставки.
-            </div>
           </div>
           
           <div class="toggle-btn ${isWeekend ? 'active' : ''}" id="weekendBtn" onclick="toggleWeekend()">
@@ -752,8 +798,8 @@
             <input type="number" id="f_nights" value="${nights}" placeholder="0" inputmode="numeric">
           </div>
           <div class="btn-row">
-            <button class="btn-secondary" onclick="closeModal()">Отмена</button>
-            <button class="btn-primary" id="btnSave">Сохранить</button>
+            <button class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+            <button class="btn btn-primary" id="btnSave">Сохранить</button>
           </div>
         `;
       } else {
@@ -765,8 +811,8 @@
             <input type="text" id="f_dayRange" value="${dayRange}" placeholder="9-11" inputmode="text">
           </div>
           <div class="btn-row">
-            <button class="btn-secondary" onclick="closeModal()">Отмена</button>
-            <button class="btn-primary" id="btnSave">Сохранить</button>
+            <button class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+            <button class="btn btn-primary" id="btnSave">Сохранить</button>
           </div>
         `;
       }
@@ -794,10 +840,8 @@
       const btn = document.getElementById('weekendBtn');
       const icon = document.getElementById('weekendIcon');
       const hiddenInput = document.getElementById('f_isWeekend');
-      
       if (!btn || !icon || !hiddenInput) return;
       const isActive = btn.classList.contains('active');
-      
       if (isActive) {
         btn.classList.remove('active');
         icon.innerHTML = '';
@@ -815,7 +859,7 @@
       
       const dayRange = dayRangeEl.value.trim();
       if (!dayRange) {
-        alert('Укажите дату');
+        showToast('Укажите дату', 'error');
         return;
       }
 
@@ -848,22 +892,14 @@
       saveMonthlyPayments();
       closeModal();
       showMonth(currentMonth);
+      showToast('Сохранено', 'success');
     }
 
+    // --- Deletion & Clearing ---
     let deleteId = null;
     function confirmDelete(id) {
       deleteId = id;
-      const html = `
-        <h3 style="color:var(--danger); margin-bottom:8px;">Удалить запись?</h3>
-        <p style="color:var(--text-sec); margin-bottom:16px;">Это действие нельзя будет отменить.</p>
-        <div class="btn-row">
-          <button class="btn-secondary" onclick="closeModal()">Отмена</button>
-          <button class="btn-danger" onclick="executeDelete()">Удалить</button>
-        </div>
-      `;
-      document.getElementById('modal-content').innerHTML = html;
-      document.getElementById('modal').classList.add('visible');
-      document.body.classList.add('modal-open');
+      showConfirm('Удалить запись?', 'Это действие нельзя будет отменить.', executeDelete);
     }
 
     function executeDelete() {
@@ -872,51 +908,53 @@
         monthData.items = monthData.items.filter(t => t.id !== deleteId);
         save();
         showMonth(currentMonth);
+        showToast('Запись удалена', 'normal');
       }
-      closeModal();
     }
 
-    function toggleTheme() {
-      document.body.classList.toggle('dark-theme');
-      const isDark = document.body.classList.contains('dark-theme');
-      localStorage.setItem('dark_theme', isDark);
-      renderMonthList();
+    function confirmClearAll() {
+      showConfirm(
+        'Очистить все данные?',
+        'Вы удалите всю историю, расчеты и настройки. Это действие необратимо.',
+        () => {
+          data = {};
+          appTitle = "Зарплата 2026";
+          if (isStorageAvailable) localStorage.removeItem('app_title');
+          save();
+          renderMonthList();
+          showToast('Все данные очищены', 'success');
+        }
+      );
     }
 
-    // ИЗМЕНЕННАЯ ФУНКЦИЯ exportData
+    // --- Import / Export ---
     function exportData() {
-      if (!checkStorage()) { 
-        alert('Нет доступа к хранилищу для экспорта'); 
-        return; 
-      }
-      
+      if (!isStorageAvailable) { showToast('Нет доступа к хранилищу', 'error'); return; }
       const filename = "salary_backup_" + new Date().toISOString().slice(0,10) + ".json";
-      const dataStr = JSON.stringify(data); // Получаем данные без "data:text/json;charset=utf-8,"
-      const mimeType = "application/json"; // Явно указываем MIME-тип
+      const dataStr = JSON.stringify(data);
 
-      // Проверяем, доступен ли нативный Android-интерфейс
       if (typeof window.Android !== 'undefined' && typeof window.Android.exportData === 'function') {
-          console.log('Экспорт через нативное Android API:', filename);
-          window.Android.exportData(dataStr, filename, mimeType);
+          window.Android.exportData(dataStr, filename, "application/json");
+          showToast('Экспорт запущен', 'success');
       } else {
-          // Иначе (если PWA запущено в обычном браузере), используем стандартный веб-метод
-          console.log('Экспорт через стандартный веб-метод (браузер):', filename);
-          const blob = new Blob([dataStr], { type: mimeType });
-          const url = URL.createObjectURL(blob);
-          const downloadAnchorNode = document.createElement('a');
-          downloadAnchorNode.setAttribute("href", url);
-          downloadAnchorNode.setAttribute("download", filename);
-          document.body.appendChild(downloadAnchorNode);
-          downloadAnchorNode.click();
-          downloadAnchorNode.remove();
-          URL.revokeObjectURL(url);
-          // alert('Файл ' + filename + ' сохранен через браузер.'); // Оповещение для веб-версии
+          try {
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", url);
+            downloadAnchorNode.setAttribute("download", filename);
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            URL.revokeObjectURL(url);
+            showToast('Файл сохранен', 'success');
+          } catch (e) {
+            showToast('Ошибка сохранения файла', 'error');
+          }
       }
     }
 
-    function triggerImport() {
-      document.getElementById('fileInput').click();
-    }
+    function triggerImport() { document.getElementById('fileInput').click(); }
 
     function handleFileImport(input) {
       const file = input.files[0];
@@ -925,29 +963,31 @@
       reader.onload = function(e) {
         try {
           const json = JSON.parse(e.target.result);
-          if (confirm('Загрузить бэкап? Текущие данные будут заменены.')) {
-            data = json;
-            save();
-            renderMonthList();
-            alert('Данные успешно загружены');
-          }
+          showConfirm(
+            'Загрузить копию?',
+            'Текущие данные будут полностью заменены.',
+            () => {
+              data = json;
+              save();
+              renderMonthList();
+              showToast('Данные успешно загружены', 'success');
+            }
+          );
         } catch (err) {
-          alert('Ошибка чтения файла');
+          showToast('Ошибка чтения файла', 'error');
         }
       };
       reader.readAsText(file);
       input.value = '';
     }
 
-    // ЖЕСТЫ СМАХИВАНИЯ
+    // --- Gestures & Init ---
     let touchStartX = 0;
     let touchStartY = 0;
-
     document.addEventListener('touchstart', e => {
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
     }, {passive: true});
-
     document.addEventListener('touchend', e => {
       const touchEndX = e.changedTouches[0].screenX;
       const touchEndY = e.changedTouches[0].screenY;
@@ -958,11 +998,8 @@
       if (!currentMonth) return;
       const diffX = ex - sx;
       const diffY = ey - sy;
-      
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-         if (diffX > 0 && sx < 50) { 
-           renderMonthList();
-         }
+        if (diffX > 0 && sx < 50) { renderMonthList(); }
       }
     }
 
@@ -970,17 +1007,18 @@
       if (e.target.id === 'modal') closeModal(); 
     };
 
-    window.addEventListener('load', () => {
-      if (localStorage.getItem('dark_theme') === 'true') {
+    window.addEventListener('DOMContentLoaded', () => {
+      initStorage();
+      if (isStorageAvailable && localStorage.getItem('dark_theme') === 'true') {
         document.body.classList.add('dark-theme');
       }
-      if (!checkStorage()) {
-        setTimeout(() => alert('Внимание: LocalStorage недоступен. Данные не будут сохраняться после закрытия вкладки.'), 1000);
-      }
       renderMonthList();
+      const loading = document.getElementById('loading-screen');
+      if(loading) {
+        loading.style.opacity = '0';
+        setTimeout(() => loading.remove(), 300);
+      }
     });
-
   </script>
 </body>
-
 </html>
